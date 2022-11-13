@@ -1,0 +1,574 @@
+{% extends "base.html" %} 
+{% block title %}Checkout{% endblock %}
+{% block content %}
+<form method="POST">
+<div class="container mt-5 mb-5">
+    <main>
+      <div class="py-5 text-center">
+        <h2>Checkout</h2>
+        <p class="lead">Por favor ingrese los siguientes detalles de facturación</p>
+      </div>
+  
+      <div class="row g-5">
+        <div class="col-md-5 col-lg-4 order-md-last">
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-primary">Su carrito</span>
+            <span id="checkout_numero_carrito" class="badge bg-primary rounded-pill">0</span>
+          </h4>
+          <ul class="list-group mb-3">
+
+            <script>
+              var monto_total = 0;
+              var moneda = '';
+              var descuento=0;
+              var impuesto=0;
+              var precio_actual = 0;
+
+              if (JSON.parse(sessionStorage.getItem("productos"))){
+                var productos = JSON.parse(sessionStorage.getItem("productos"));
+                console.log(productos)
+                for (var producto of productos){
+                  var string = `
+                  <li id="lista_productos" class="list-group-item d-flex justify-content-between lh-sm">
+                    <div id="div_productos">
+                      <h6 class="my-0">`+producto.nombre+`</h6>
+                      <small class="text-muted">`+producto.descripcion+`</small>
+                      <br />
+                      <small class="text-muted">Cantidad: `+producto.cantidad+`</small>
+                      <br />
+                      <small class="text-muted">Precio base: `+producto.precio+` `+producto.moneda_nombre+`</small>
+                      <br />
+                      <small class="text-muted">Porcentaje proveedor: `+producto.porcentaje_proveedor+`%`+`</small>
+                      `
+                      if (producto.en_descuento==1){
+                        string=string+`<br /><small class="text-muted">Descuento: `+producto.porcentaje_descuento+`%</small>`
+                        precio_actual=producto.precio;
+                        precio_actual=precio_actual-(((parseFloat(producto.porcentaje_descuento))/100)*producto.precio)
+                      }
+                      if (producto.tiene_impuesto==1){
+                        string=string+`<br /><small class="text-muted">Impuesto: `+producto.impuesto_porcentaje+`%</small>`
+                        precio_actual=precio_actual+(((parseFloat(producto.impuesto_porcentaje))/100)*producto.precio)
+                        
+                      }
+                      precio_actual=precio_actual+(((parseFloat(producto.porcentaje_proveedor))/100)*producto.precio)
+                      precio_actual=precio_actual*producto.cantidad
+                      string=string+`
+                      <br />
+                      <small class="text-muted">Precio total: `+precio_actual+ ` `+producto.moneda_nombre+`</small>
+                      </div>
+                      </li>`
+                      
+                      
+                  document.write(string);
+                  monto_total = precio_actual
+                  moneda=producto.moneda_nombre;
+                  precio_actual=0;
+                }
+                document.write(
+                  `
+                  <li class="list-group-item d-flex justify-content-between">
+                    <span><b>Total:</b></span>
+                    <strong id="monto_pagado">`+monto_total+`</strong>`+moneda+`
+                  </li>
+                  <div id="monto_pagado_sin_domicilio" hidden>`+monto_total+`</div>`
+                );
+              }
+              
+            </script>
+            
+            <button name="button_post" class="w-100 btn btn-primary btn-lg" type="submit" onclick="return foo();">Continuar</button>
+          </ul>
+  
+        </div>
+        <div class="col-md-7 col-lg-8">
+          <h4 class="mb-3">Detalles de facturación</h4>
+          <form class="needs-validation">
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <label for="firstName" class="form-label">Nombre</label>
+                <input name="nombre" type="text" class="form-control" id="firstName" placeholder="Ingrese su nombre" value="" required>
+                <div class="invalid-feedback">
+                  Por favor escriba un nombre válido.
+                </div>
+              </div>
+  
+              <div class="col-sm-6">
+                <label for="lastName" class="form-label">Apellido(s)</label>
+                <input name="apellido" type="text" class="form-control" id="lastName" placeholder="Ingrese su(s) apellido(s)" value="" required>
+                <div class="invalid-feedback">
+                  Por favor escriba un apellido válido.
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <label for="productos" class="form-label" hidden>Test</label>
+                <input name="productos" type="text" class="form-control" id="productos" placeholder="Productos" value="Testing" hidden>
+                <div class="invalid-feedback">
+                  Por favor escriba un apellido válido.
+                </div>
+              </div>
+
+              <div class="col-sm-6">
+                <label for="usuario" class="form-label" hidden>Test2</label>
+                <input name="usuario" type="text" class="form-control" id="usuario" placeholder="Usuario" value="Testing2" hidden>
+                <div class="invalid-feedback">
+                  Por favor escriba un apellido válido.
+                </div>
+              </div>
+  
+              <div class="col-12">
+                <label for="email" class="form-label">Correo</label>
+                <input name="correo" type="email" class="form-control" id="email" placeholder="correo@ejemplo.com" required>
+                <div class="invalid-feedback">
+                  Por favor escriba un correo válido.
+                </div>
+              </div>
+  
+              <div class="col-12">
+                <label for="address" class="form-label">Dirección</label>
+                <input name="direccion" type="text" class="form-control" id="address" placeholder="Ingrese su dirección" required>
+                <div class="invalid-feedback">
+                  Por favor escriba una dirección válida.
+                </div>
+              </div>
+  
+              <div class="col-md-3">
+                <label for="country" class="form-label">País</label>
+                <select name="pais" class="form-select" id="country" required>
+                  <option value="">Choose...</option>
+                  <option>Costa Rica</option>
+                  <option>Guatemala</option>
+                  <option>Panama</option>
+                </select>
+                <div class="invalid-feedback">
+                  Por favor seleccione un país valido.
+                </div>
+              </div>
+  
+              <div class="col-md-3">
+                <label for="ciudad" class="form-label">Ciudad/Distrito</label>
+                <input name="ciudad" type="text" class="form-control" id="ciudad" placeholder="Su ciudad o distrito" required>
+                <div class="invalid-feedback">
+                  Por favor escriba una ciudad o distrito valido.
+                </div>
+              </div>
+
+              <div class="col-lg">
+                <label for="sucursal" class="form-label">Sucursal más cercana <b>(automáticamente elegida)</b></label>
+                <input name="sucursal" type="text" class="form-control" id="sucursal" placeholder="Sucursal elegida" value="{{sucursales[0][1]}}" readonly required>
+                <div class="invalid-feedback">
+                  Zip code required.
+                </div>
+              </div>
+
+              <div hidden class="col-sm">
+                <label hidden for="sucursal_ID" class="form-label">Sucursal más cercana <b>(automáticamente elegida)</b></label>
+                <input name="sucursal_ID" type="text" class="form-control" id="sucursal_ID" placeholder="sucursal_ID" value="{{sucursales[0][0]}}" hidden>
+                <div class="invalid-feedback">
+                  Zip code required.
+                </div>
+              </div>
+              
+            </div>
+  
+            <hr class="my-4">
+  
+            <h4 class="mb-3">Método de pago</h4>
+  
+            <div class="my-3">
+              <div class="form-check">
+                <input value="Tarjeta de débito" id="debit" name="paymentMethod" type="radio" onchange="showPaymentMethod()" class="form-check-input" checked>
+                <label class="form-check-label" for="debit">Tarjeta de débito</label>
+              </div>
+              <div class="form-check">
+                <input value="Tarjeta de crédito" id="credit" name="paymentMethod" type="radio" onchange="showPaymentMethod()" class="form-check-input">
+                <label class="form-check-label" for="credit">Tarjeta de crédito</label>
+              </div>
+              <div class="form-check">
+                <input value="Paypal" id="paypal" name="paymentMethod" type="radio" onchange="showPaymentMethod()" class="form-check-input">
+                <label class="form-check-label" for="paypal">PayPal</label>
+              </div>
+              <div class="form-check">
+                <input value="Criptomonedas" id="crypto" name="paymentMethod" type="radio" onchange="showPaymentMethod()" class="form-check-input">
+                <label class="form-check-label" for="crypto">Criptomonedas</label>
+              </div>
+              <div class="form-check">
+                <input value="Efectivo" id="cash" name="paymentMethod" type="radio" onchange="showPaymentMethod()" class="form-check-input">
+                <label class="form-check-label" for="cash">Efectivo</label>
+              </div>
+              <div class="form-check">
+                <input value="Cheque" id="check" name="paymentMethod" type="radio" onchange="showPaymentMethod()" class="form-check-input">
+                <label class="form-check-label" for="check">Cheque</label>
+              </div>
+            </div>
+
+            <h4 class="mb-3">Tipo de entrega (Si no selecciona domicilio, será por pickup en la sucursal)</h4>
+  
+            <div class="my-3">
+              <div class="form-check">
+                <input name="tipo_entrega" class="form-check-input" type="checkbox" onchange="applyDeliveryFee()" value="Domicilio" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                  Domicilio
+                </label>
+              </div>
+
+            <hr class="my-4">
+            
+            <div id="divDebit" class="container mt-5 mb-5">
+                <div class="row gy-3">
+              <div class="col-md-6">
+                <label for="debito_nombre" class="form-label">Nombre completo</label>
+                <input required name="debito_nombre" type="text" class="form-control" id="debit-name" placeholder="">
+                <small class="text-muted">Ingrese el nombre completo registrado en su tarjeta</small>
+                <div class="invalid-feedback">
+                  Se requiere el nombre registrado en la tarjeta
+                </div>
+              </div>
+  
+              <div class="col-md-6">
+                <label for="debito_numero" class="form-label">Número de tarjeta de débito</label>
+                <input required name="debito_numero" type="number" class="form-control" id="debit-number" placeholder="">
+                <div class="invalid-feedback">
+                  Se requiere el número registrado en la tarjeta
+                </div>
+              </div>
+  
+              <div class="col-md-3">
+                <label for="debito_expiracion" class="form-label">Expiración</label>
+                <input required name="debito_expiracion" type="date" class="form-control" id="debit-expiration" placeholder="">
+                <div class="invalid-feedback">
+                  Se requiere la fecha de expiración de la tarjeta
+                </div>
+              </div>
+  
+              <div class="col-md-3">
+                <label for="debito_cvv" class="form-label">CVV</label>
+                <input required name="debito_cvv" type="number" class="form-control" id="debit-cvv" placeholder="">
+                <div class="invalid-feedback">
+                  Se requiere el código de seguridad de la tarjeta
+                </div>
+              </div>
+            </div>
+          </div>
+
+      <div hidden="hidden" id="divCredit" class="container mt-5 mb-5">
+            <div class="row gy-3">
+          <div class="col-md-6">
+            <label for="credito_nombre" class="form-label">Nombre completo</label>
+            <input name="credito_nombre" type="text" class="form-control" id="cc-name" placeholder="">
+            <small class="text-muted">Ingrese el nombre completo registrado en su tarjeta</small>
+            <div class="invalid-feedback">
+              Se requiere el nombre registrado en la tarjeta
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label for="credito_numero" class="form-label">Número de tarjeta de crédito</label>
+            <input name="credito_numero" type="number" class="form-control" id="cc-number" placeholder="">
+            <div class="invalid-feedback">
+              Se requiere el número de la tarjeta
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label for="credito_expiracion" class="form-label">Expiración</label>
+            <input name="credito_expiracion" type="date" class="form-control" id="cc-expiration" placeholder="">
+            <div class="invalid-feedback">
+              Se requiere la fecha de expiración de la tarjeta
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <label for="credito_cvv" class="form-label">CVV</label>
+            <input name="credito_cvv" type="number" class="form-control" id="cc-cvv" placeholder="">
+            <div class="invalid-feedback">
+              Se requiere el CVV de la tarjeta
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div hidden="hidden" id="divPaypal" class="container mt-5 mb-5">
+        <div class="row gy-3">
+      <div class="col-md-6">
+        <label for="paypal_usuario" class="form-label">Usuario de cuenta Paypal</label>
+        <input name="paypal_usuario" type="text" class="form-control" id="paypal-user" placeholder="">
+        <div class="invalid-feedback">
+          Se requiere el username de su cuenta de paypal
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <label for="paypal_password" class="form-label">Password de cuenta paypal</label>
+        <input name="paypal_password" type="password" class="form-control" id="paypal-password" placeholder="">
+        <div class="invalid-feedback">
+          Se requiere la password de su cuenta de paypal
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div hidden="hidden" id="divCrypto" class="container mt-5 mb-5">
+    <div class="row gy-3">
+    <div class="col-md-6">
+    <label for="crypto_address" class="form-label">Address de Blockchain</label>
+    <input name="crypto_address" type="text" class="form-control" id="blockchain-address" placeholder="">
+    <small class="text-muted">La address de su wallet de Blockchain</small>
+    <div class="invalid-feedback">
+      Se requiere su address de blockchain
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <select id="crypto-type" name="crypto_seleccionada" class="form-select" aria-label="Default select example">
+      <option selected>Seleccionar criptomoneda deseada</option>
+      <option value="1">Bitcoin</option>
+      <option value="2">Etherium</option>
+      <option value="3">Binance Coin</option>
+    </select>
+  </div>
+
+</div>
+</div>
+
+<div hidden="hidden" id="divCheck" class="container mt-5 mb-5">
+  <div class="row gy-3">
+  <div class="col-md-6">
+  <label for="cheque_numero" class="form-label">Número de cheque</label>
+  <input name="cheque_numero" type="number" class="form-control" id="cheque_numero" placeholder="">
+  <small class="text-muted">El número de su cheque</small>
+  <div class="invalid-feedback">
+    Se requiere el número del cheque
+  </div>
+</div>
+  
+            <hr class="my-4">
+          </form>
+        </div>
+      </div>
+    </main>
+</div>
+</form>
+<script>
+function showPaymentMethod(){
+  if(document.getElementById('debit').checked) {
+    var debit = document.getElementById("divDebit");
+    debit.removeAttribute("hidden");
+    document.getElementById("debit-name").setAttribute('required', '');
+    document.getElementById("debit-number").setAttribute('required', '');
+    document.getElementById("debit-expiration").setAttribute('required', '');
+    document.getElementById("debit-cvv").setAttribute('required', '');
+
+    var credit = document.getElementById("divCredit");
+    credit.setAttribute("hidden", "hidden");
+    document.getElementById("cc-name").removeAttribute('required');
+    document.getElementById("cc-number").removeAttribute('required');
+    document.getElementById("cc-expiration").removeAttribute('required');
+    document.getElementById("cc-cvv").removeAttribute('required');
+
+    var paypal = document.getElementById("divPaypal");
+    paypal.setAttribute("hidden", "hidden");
+    document.getElementById("paypal-user").removeAttribute('required');
+    document.getElementById("paypal-password").removeAttribute('required');
+
+    var crypto = document.getElementById("divCrypto");
+    crypto.setAttribute("hidden", "hidden");
+    document.getElementById("blockchain-address").removeAttribute('required');
+    document.getElementById("crypto-type").removeAttribute('required');
+
+    var check = document.getElementById("divCheck");
+    check.setAttribute("hidden", "hidden");
+    document.getElementById("cheque_numero").removeAttribute('required');
+
+  }else if(document.getElementById('credit').checked) {
+    var debit = document.getElementById("divDebit");
+    debit.setAttribute("hidden", "hidden");
+    document.getElementById("debit-name").removeAttribute('required');
+    document.getElementById("debit-number").removeAttribute('required');
+    document.getElementById("debit-expiration").removeAttribute('required');
+    document.getElementById("debit-cvv").removeAttribute('required');
+
+    var credit = document.getElementById("divCredit");
+    credit.removeAttribute("hidden");
+    document.getElementById("cc-name").setAttribute('required', '');
+    document.getElementById("cc-number").setAttribute('required', '');
+    document.getElementById("cc-expiration").setAttribute('required', '');
+    document.getElementById("cc-cvv").setAttribute('required', '');
+
+    var paypal = document.getElementById("divPaypal");
+    paypal.setAttribute("hidden", "hidden");
+    document.getElementById("paypal-user").removeAttribute('required');
+    document.getElementById("paypal-password").removeAttribute('required');
+
+    var crypto = document.getElementById("divCrypto");
+    crypto.setAttribute("hidden", "hidden");
+    document.getElementById("blockchain-address").removeAttribute('required');
+    document.getElementById("crypto-type").removeAttribute('required');
+
+    var check = document.getElementById("divCheck");
+    check.setAttribute("hidden", "hidden");
+    document.getElementById("cheque_numero").removeAttribute('required');
+
+  }
+  else if(document.getElementById('paypal').checked) {
+    var debit = document.getElementById("divDebit");
+    debit.setAttribute("hidden", "hidden");
+    document.getElementById("debit-name").removeAttribute('required');
+    document.getElementById("debit-number").removeAttribute('required');
+    document.getElementById("debit-expiration").removeAttribute('required');
+    document.getElementById("debit-cvv").removeAttribute('required');
+
+    var credit = document.getElementById("divCredit");
+    credit.setAttribute("hidden", "hidden");
+    document.getElementById("cc-name").removeAttribute('required');
+    document.getElementById("cc-number").removeAttribute('required');
+    document.getElementById("cc-expiration").removeAttribute('required');
+    document.getElementById("cc-cvv").removeAttribute('required');
+
+    var paypal = document.getElementById("divPaypal");
+    paypal.removeAttribute("hidden");
+    document.getElementById("paypal-user").setAttribute('required', '');
+    document.getElementById("paypal-password").setAttribute('required', '');
+
+
+    var crypto = document.getElementById("divCrypto");
+    crypto.setAttribute("hidden", "hidden");
+    document.getElementById("blockchain-address").removeAttribute('required');
+    document.getElementById("crypto-type").removeAttribute('required');
+
+    var check = document.getElementById("divCheck");
+    check.setAttribute("hidden", "hidden");
+    document.getElementById("cheque_numero").removeAttribute('required');
+
+  }else if(document.getElementById('crypto').checked) {
+    var debit = document.getElementById("divDebit");
+    debit.setAttribute("hidden", "hidden");
+    document.getElementById("debit-name").removeAttribute('required');
+    document.getElementById("debit-number").removeAttribute('required');
+    document.getElementById("debit-expiration").removeAttribute('required');
+    document.getElementById("debit-cvv").removeAttribute('required');
+
+    var credit = document.getElementById("divCredit");
+    credit.setAttribute("hidden", "hidden");
+    document.getElementById("cc-name").removeAttribute('required');
+    document.getElementById("cc-number").removeAttribute('required');
+    document.getElementById("cc-expiration").removeAttribute('required');
+    document.getElementById("cc-cvv").removeAttribute('required');
+
+    var paypal = document.getElementById("divPaypal");
+    paypal.setAttribute("hidden", "hidden");
+    document.getElementById("paypal-user").removeAttribute('required');
+    document.getElementById("paypal-password").removeAttribute('required');
+
+    var crypto = document.getElementById("divCrypto");
+    crypto.removeAttribute("hidden");
+    document.getElementById("blockchain-address").setAttribute('required', '');
+    document.getElementById("crypto-type").setAttribute('required', '');
+
+
+    var check = document.getElementById("divCheck");
+    check.setAttribute("hidden", "hidden");
+    document.getElementById("cheque_numero").removeAttribute('required');
+
+  }else if(document.getElementById('check').checked) {
+    var debit = document.getElementById("divDebit");
+    debit.setAttribute("hidden", "hidden");
+    document.getElementById("debit-name").removeAttribute('required');
+    document.getElementById("debit-number").removeAttribute('required');
+    document.getElementById("debit-expiration").removeAttribute('required');
+    document.getElementById("debit-cvv").removeAttribute('required');
+
+    var credit = document.getElementById("divCredit");
+    credit.setAttribute("hidden", "hidden");
+    document.getElementById("cc-name").removeAttribute('required');
+    document.getElementById("cc-number").removeAttribute('required');
+    document.getElementById("cc-expiration").removeAttribute('required');
+    document.getElementById("cc-cvv").removeAttribute('required');
+
+    var paypal = document.getElementById("divPaypal");
+    paypal.setAttribute("hidden", "hidden");
+    document.getElementById("paypal-user").removeAttribute('required');
+    document.getElementById("paypal-password").removeAttribute('required');
+
+    var crypto = document.getElementById("divCrypto");
+    crypto.setAttribute("hidden", "hidden");
+    document.getElementById("blockchain-address").removeAttribute('required');
+    document.getElementById("crypto-type").removeAttribute('required');
+
+    var check = document.getElementById("divCheck");
+    check.removeAttribute("hidden");
+    document.getElementById("cheque_numero").setAttribute('required', '');
+
+  }
+  else if(document.getElementById('cash').checked) {
+    var debit = document.getElementById("divDebit");
+    debit.setAttribute("hidden", "hidden");
+    document.getElementById("debit-name").removeAttribute('required');
+    document.getElementById("debit-number").removeAttribute('required');
+    document.getElementById("debit-expiration").removeAttribute('required');
+    document.getElementById("debit-cvv").removeAttribute('required');
+
+    var credit = document.getElementById("divCredit");
+    credit.setAttribute("hidden", "hidden");
+    document.getElementById("cc-name").removeAttribute('required');
+    document.getElementById("cc-number").removeAttribute('required');
+    document.getElementById("cc-expiration").removeAttribute('required');
+    document.getElementById("cc-cvv").removeAttribute('required');
+
+    var paypal = document.getElementById("divPaypal");
+    paypal.setAttribute("hidden", "hidden");
+    document.getElementById("paypal-user").removeAttribute('required');
+    document.getElementById("paypal-password").removeAttribute('required');
+
+    var crypto = document.getElementById("divCrypto");
+    crypto.setAttribute("hidden", "hidden");
+    document.getElementById("blockchain-address").removeAttribute('required');
+    document.getElementById("crypto-type").removeAttribute('required');
+
+    var check = document.getElementById("divCheck");
+    check.setAttribute("hidden", "hidden");
+    document.getElementById("cheque_numero").removeAttribute('required');
+
+  }
+
+}
+
+function changeCartNumber(){
+  var amount_cart = JSON.parse(sessionStorage.getItem("productos")).length;
+  document.getElementById("checkout_numero_carrito").innerHTML = amount_cart;
+}
+
+function applyDeliveryFee(){
+  if (document.getElementById("flexCheckDefault").checked){
+    var monto_sin_delivery = parseFloat(document.getElementById("monto_pagado_sin_domicilio").innerHTML);
+    var monto_con_delivery = monto_sin_delivery + (monto_sin_delivery*0.10)
+    console.log(monto_sin_delivery)
+    console.log(monto_con_delivery)
+    document.getElementById("monto_pagado").innerHTML=monto_con_delivery.toString();
+  }
+  else{
+    var monto_con_delivery = parseFloat(document.getElementById("monto_pagado").innerHTML);
+    var monto_sin_delivery = parseFloat(document.getElementById("monto_pagado_sin_domicilio").innerHTML);
+    console.log(monto_sin_delivery)
+    console.log(monto_con_delivery)
+    document.getElementById("monto_pagado").innerHTML=monto_sin_delivery.toString();
+  }
+  
+}
+
+function foo() {
+  var productos = sessionStorage.getItem("productos");
+  var usuario = JSON.parse(sessionStorage.getItem("usuario")).cedula;
+  console.log(productos)
+  console.log(usuario)
+  document.getElementById("productos").value=productos
+  document.getElementById("productos").innerHTML=productos
+  document.getElementById("usuario").value=usuario
+  document.getElementById("usuario").innerHTML=usuario
+  console.log(document.getElementById("productos").value)
+  console.log(document.getElementById("usuario").value)
+  return true;
+}
+</script>
+{% endblock %}

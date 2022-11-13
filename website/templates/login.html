@@ -1,0 +1,48 @@
+{% extends "base.html" %} 
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<br />
+<br />
+<br />
+<div class="container text-center">
+  <img class="mb-4" src="https://cdn.icon-icons.com/icons2/2699/PNG/512/walmart_logo_icon_170230.png" alt="" width="72" height="57">
+</div>
+<div class="container">
+  <form method="POST">
+    <h3 align="center">Iniciar sesión</h3>
+    <div class="form-group">
+      <label for="email">Correo</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        placeholder="Enter email"
+      />
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        name="password"
+        placeholder="Enter password"
+      />
+    </div>
+    <br />
+    <div class="form-check">
+      <input value="Cliente" id="cliente" name="clientOrEmployee" type="radio" class="form-check-input" checked>
+      <label class="form-check-label" for="cliente">Cliente</label>
+    </div>
+    <div class="form-check">
+      <input value="Empleado" id="empleado" name="clientOrEmployee" type="radio" class="form-check-input">
+      <label class="form-check-label" for="empleado">Empleado</label>
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+  </form>
+</div>
+
+  {% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %} 
+{% block title %}Revisar productos{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de productos expirados</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="POST" class="d-inline-flex p-2">
+                <a id="btn_revisar_expirados" class="btn btn-outline-dark" href="/revisar_expirados_quitar_exhibidor?sucursal_ID={{sucursal_ID}}&sucursal={{sucursal}}" role="button">
+                    Quitar expirados del exhibidor
+                </a>
+            </form>   
+        </div>
+        <br />
+    <h3>Viendo los productos expirados</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID producto</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">País</th>
+        <th scope="col">Producto</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Categoría</th>
+        <th scope="col">Porcentaje impuesto</th>
+        <th scope="col">Mínimo</th>
+        <th scope="col">Máximo</th>
+        <th scope="col">Fecha producción</th>
+        <th scope="col">Fecha expiración</th>
+        <th scope="col">Días para expirar</th>
+        <th scope="col">Precio base</th>
+        <th scope="col">Proveedor</th>
+        <th scope="col">Porcentaje descuento</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Porcentaje proveedor</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if productos %}
+        {% set count = namespace(value=0) %}
+        {% for row in productos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[6]}}
+        </td>
+        <td>
+            {{row[7]}}
+        </td>
+        <td>
+            {{row[8]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[11]}}
+        </td>
+        <td>
+            {{row[12]}}
+        </td>
+        <td>
+            {{row[13]}}
+        </td>
+        <td>
+            {{row[14]}} días
+        </td>
+        <td>
+            {{row[16]}} {{row[4]}}
+        </td>
+        <td>
+            {{row[17]}}
+        </td>
+        <td>
+            {{row[15]}}
+        <td>
+            {{row[9]}}
+        </td>
+        <td>
+            {{row[18]}}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron productos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

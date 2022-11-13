@@ -1,0 +1,81 @@
+{% extends "base.html" %} 
+{% block title %}Consultar montos{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de montos recolectados</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("consultar_montos_recolectados_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar por fecha</a>
+              </form>
+              <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_cedula" class="form-control me-2" type="search" placeholder="Cédula de cliente" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("consultar_montos_recolectados_cliente?cedula="+document.getElementById("busqueda_cedula").value, "_self");' type="submit">Buscar por cliente</a>
+              </form>
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por sucursal
+              </button>
+              <ul class="dropdown-menu">
+                {% for row in sucursales %}
+                <li><a class="dropdown-item" href="/consultar_montos_recolectados_sucursal?sucursal={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+              </ul>
+              <form class="d-inline-flex p-2">
+                <a id="btn_envios" class="btn btn-outline-dark" href="/consultar_montos_recolectados_envios" role="button">
+                    Buscar por envíos
+                </a>
+            </form>
+            <form class="d-inline-flex p-2">
+              <a id="btn_envios" class="btn btn-outline-dark" href="/consultar_montos_recolectados_facturas" role="button">
+                  Ver todas las facturas
+              </a>
+          </form>
+        </div>
+        <br />
+    <h3>Viendo montos recolectados totales por sucursal</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Sucursal</th>
+        <th scope="col">Monto total</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if montos %}
+        {% set count = namespace(value=0) %}
+        {% for row in montos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+          {{sucursal}}
+        </th>
+        <td>
+          {% if row[0][0] != None %}
+          {{row[0]}}
+          {% else %}
+          0
+          {% endif %}
+          {{moneda}}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron montos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

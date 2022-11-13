@@ -1,0 +1,154 @@
+{% extends "base.html" %} 
+{% block title %}Ingresar empleado{% endblock %}
+{% block content %}
+<form method="POST">
+    <br />
+    <body class="text-left">
+        <div class="container">
+            <main class="form-signup">
+                <form>
+
+                    <h3 class="text-center">Ingresar empleado</h3>
+
+                    <div class="form-group">
+                        <label for="cedula">Cédula</label>
+                        <input required
+                            type="number" 
+                            class="form-control" 
+                            id="cedula" 
+                            name="cedula" 
+                            placeholder="Ingrese su número de cédula"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo</label>
+                        <input required
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Ingrese su correo"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Nombre</label>
+                        <input required
+                            type="text" 
+                            class="form-control" 
+                            id="firstName" 
+                            name="firstName" 
+                            placeholder="Ingrese su nombre"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Apellido(s)</label>
+                        <input required
+                            type="text" 
+                            class="form-control" 
+                            id="lastName" 
+                            name="lastName" 
+                            placeholder="Ingrese su(s) apellido(s)"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input required
+                            type="number" 
+                            class="form-control" 
+                            id="telefono" 
+                            name="telefono" 
+                            placeholder="Ingrese su número de teléfono"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="salario_base">Salario base (dólares)</label>
+                        <input required
+                            type="number" 
+                            class="form-control" 
+                            id="salario_base" 
+                            name="salario_base" 
+                            placeholder="Ingrese el salario base"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="link_imagen">Link a su imagen anual</label>
+                        <input required
+                            type="url" 
+                            class="form-control" 
+                            id="link_imagen" 
+                            name="link_imagen" 
+                            placeholder="Ingrese su link de imagen anual"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="password1">Password</label>
+                        <input required
+                            type="password" 
+                            class="form-control" 
+                            id="password1" 
+                            name="password1" 
+                            placeholder="Enter password"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="password2">Confirme su password</label>
+                        <input required
+                            type="password" 
+                            class="form-control" 
+                            id="password2" 
+                            name="password2" 
+                            placeholder="Confirmar password"
+                        />
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label for="paises">Seleccione su país</label>
+                        <select name="pais" id="pais" required>
+                            <option value="Costa Rica">Costa Rica</option>
+                            <option value="Guatemala">Guatemala</option>
+                            <option value="Panama">Panamá</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sucursales">Seleccione su sucursal</label>
+                        <select name="sucursal" id="sucursal" required>
+                            {% for row in sucursales %}
+                            <option value="{{row.nombre}}">{{row.nombre}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="puestos">Seleccione su puesto</label>
+                        <select name="puesto" id="puesto" required>
+                            {% for row in puestos %}
+                            <option value="{{row.nombre}}">{{row.nombre}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    
+                    <br />
+                    <div class="col text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    <div id="result">
+                        <!--Position information will be inserted here-->
+                    </div>
+                </form>
+            </main>
+        </div>
+        <script>
+            function showPosition() {
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var positionInfo = "Your current position is (" + position.coords.longitude + " " + position.coords.latitude + ")";
+                        document.getElementById("result").innerHTML = positionInfo;
+                    });
+                } else {
+                    alert("Sorry, your browser does not support HTML5 geolocation.");
+                }
+            }
+        </script>
+    </body>
+</form>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "base.html" %} 
+{% block title %}Generar reportes{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Generar reportes de clientes más frecuentes</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("/clientes_mas_frecuentes_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar por fecha</a>
+              </form>
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por país
+                </button>
+                <ul class="dropdown-menu">
+                {% for row in paises %}
+                <li><a class="dropdown-item" href="/clientes_mas_frecuentes_pais?pais={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+                </ul>
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por producto
+                </button>
+                <ul class="dropdown-menu">
+                {% for row in productos %}
+                <li><a class="dropdown-item" href="/clientes_mas_frecuentes_productos?producto={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+                </ul>
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por proveedor
+                </button>
+                <ul class="dropdown-menu">
+                {% for row in proveedores %}
+                <li><a class="dropdown-item" href="/clientes_mas_frecuentes_proveedor?proveedor={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}      
+
+        </div>
+        <br />
+        <h3>Mostrando información de clientes más frecuentes por país para todas las sucursales</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Cédula cliente</th>
+        <th scope="col">Cédula cliente</th>
+        <th scope="col">Veces comprado</th>
+        <th scope="col">Monto total gastado</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if reporte %}
+        {% set count = namespace(value=0) %}
+        {% for row in reporte %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{pais}}
+        </th>
+        <td>
+            {{row[0]}}
+        </td>
+        <td>
+            {{row[1]}}
+        </td>
+        <td>
+            {{row[2]}} {{moneda}}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron los montos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

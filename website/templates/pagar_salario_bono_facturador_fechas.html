@@ -1,0 +1,70 @@
+{% extends "base.html" %} 
+{% block title %}Bono facturador{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Viendo empleados que han facturado al menos 1000 productos en 1 semana</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("/pagar_salario_bono_facturador_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar facturadores</a>
+              </form>
+        </div>
+        <br />
+    <h1>Por favor escriba las fechas para ver los facturadores que han facturado al menos 1000 productos en esa semana</h1>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Cantidad facturado</th>
+        <th scope="col">Cédula</th>
+        <th scope="col">Otorgar bono</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if bonos %}
+        {% set count = namespace(value=0) %}
+        {% for row in bonos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {% if row[1] %}
+            {{row[1]}}
+            {% else %}
+            Compras digitales (No aplica)
+            {% endif %}
+        </td>
+        <td>
+            {% if row[1] %}
+            <form class="d-inline-flex p-2">
+                <a id="btn_reorden" class="btn btn-outline-dark" href="/pagar_salario_bono_facturador_fechas_otorgar?fecha1={{fecha1}}&fecha2={{fecha2}}&cedula={{row[1]}}" role="button">
+                    Otorgar bono
+            </a>
+            </form>
+            {% else %}
+            Compras digitales (No aplica)
+            {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron empleados.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %} 
+{% block title %}Consultar bonos{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de bonos recibidos</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("consultar_bonos_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar por fecha</a>
+              </form>
+              <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_cedula" class="form-control me-2" type="search" placeholder="Cédula de empleado" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("consultar_bonos_empleado?cedula="+document.getElementById("busqueda_cedula").value, "_self");' type="submit">Buscar por empleado</a>
+              </form>
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por sucursal
+              </button>
+              <ul class="dropdown-menu">
+                {% for row in sucursales %}
+                <li><a class="dropdown-item" href="/consultar_bonos_sucursal?sucursal={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+              </ul>
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por país
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/consultar_bonos_pais?pais=Costa+Rica">Costa Rica</a></li>
+                <li><a class="dropdown-item" href="/consultar_bonos_pais?pais=Guatemala">Guatemala</a></li>
+                <li><a class="dropdown-item" href="/consultar_bonos_pais?pais=Panama">Panama</a></li>
+              </ul>
+        </div>
+        <br />
+        {% if fecha1 and fecha2 %}
+        <h3>Viendo montos recolectados de ventas totales por fechas: De {{fecha1}} a {{fecha2}}</h3>
+            {% else %}
+            <h3>Viendo montos recolectados de ventas totales por fechas</h3>
+            {% endif %}
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Bono</th>
+        <th scope="col">Porcentaje</th>
+        <th scope="col">Cédula</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">Pais</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Monto bono</th>
+        <th scope="col">Monto pagado</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if bonos %}
+        {% set count = namespace(value=0) %}
+        {% for row in bonos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[1]}}
+        </th>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[4]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[7]}}
+        </td>
+        <td>
+            {{row[9]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[12]}} {{row[11]}} 
+        </td>
+        <td>
+            {{row[13]}} {{row[11]}} 
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron bonos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

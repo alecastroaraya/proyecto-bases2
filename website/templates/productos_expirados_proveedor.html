@@ -1,0 +1,118 @@
+{% extends "base.html" %} 
+{% block title %}Generar reportes{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Generar reportes de productos expirados</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("/productos_expirados_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar por fecha</a>
+              </form>
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por país
+                </button>
+                <ul class="dropdown-menu">
+                {% for row in paises %}
+                <li><a class="dropdown-item" href="/productos_expirados_pais?pais={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+                </ul>
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por producto
+                </button>
+                <ul class="dropdown-menu">
+                {% for row in productos %}
+                <li><a class="dropdown-item" href="/productos_expirados_productos?producto={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+                </ul>
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por proveedor
+                </button>
+                <ul class="dropdown-menu">
+                {% for row in proveedores %}
+                <li><a class="dropdown-item" href="/productos_expirados_proveedor?proveedor={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}      
+
+        </div>
+        <br />
+        <h3>Viendo productos expirados por proveedor</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Producto</th>
+        <th scope="col">Fecha producción</th>
+        <th scope="col">Fecha expiración</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">País</th>
+        <th scope="col">Moneda</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">En stock</th>
+        <th scope="col">Categoría</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Proveedor</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if reporte %}
+        {% set count = namespace(value=0) %}
+        {% for row in reporte %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[1]}}
+        </th>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+          {{row[4]}}
+      </td>
+      <td>
+        {{row[5]}}
+    </td>
+    <td>
+      {{row[6]}}
+  </td>
+  <td>
+    {{row[7]}}
+</td>
+  <td>
+    {{row[8]}}
+</td>
+<td>
+  {{row[9]}}
+</td>
+<td>
+  {{row[10]}}
+</td>
+<td>
+  {{row[11]}}
+</td>
+<td>
+  {{row[12]}}
+</td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron los productos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %} 
+{% block title %}Mapa sucursal{% endblock %}
+{% block content %}
+<script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg="
+crossorigin=""></script>
+
+
+<div class="text-center">
+    <h4>Viendo ubicación de sucursal {{nombre}}</h4>
+    <a id="btn_volver_sucursal" class="btn btn-outline-dark" href="/informacion_sucursales?ubicacion={{longitud}}+{{latitud}}" type="submit">
+        Volver a sucursal
+    </a>
+</div>
+<br />
+<div id="map" style="width: 2133px; height: 1000px"></div>
+<script>
+    var map = L.map('map').setView(['{{latitud}}', '{{longitud}}'], 16);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+    var marker = L.marker(['{{latitud}}', '{{longitud}}']).addTo(map);
+    marker.bindPopup("<b>Sucursal</b><br />{{nombre}}").openPopup();
+</script>
+{% endblock %}

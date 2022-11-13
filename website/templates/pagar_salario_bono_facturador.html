@@ -1,0 +1,20 @@
+{% extends "base.html" %} 
+{% block title %}Bono facturador{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Viendo empleados que han facturado al menos 1000 productos en 1 semana</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("/pagar_salario_bono_facturador_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar facturadores</a>
+              </form>
+        </div>
+        <br />
+    <h1>Por favor escriba las fechas para ver los facturadores que han facturado al menos 1000 productos en esa semana</h1>
+    <br />
+</div>
+{% endblock %}

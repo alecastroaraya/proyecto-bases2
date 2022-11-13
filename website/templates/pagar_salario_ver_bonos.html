@@ -1,0 +1,79 @@
+{% extends "base.html" %} 
+{% block title %}Historial de bonos{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de bonos recibidos</h2>
+    <div class="container-fluid">
+        <br />
+    <h3>Viendo historial de bonos</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Bono</th>
+        <th scope="col">Porcentaje</th>
+        <th scope="col">Cédula</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">Pais</th>
+        <th scope="col">Fecha</th>
+        <th scope="col">Monto bono</th>
+        <th scope="col">Monto pagado</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if bonos %}
+        {% set count = namespace(value=0) %}
+        {% for row in bonos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[1]}}
+        </th>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[4]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[7]}}
+        </td>
+        <td>
+            {{row[9]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[12]}} {{row[11]}} 
+        </td>
+        <td>
+            {{row[13]}} {{row[11]}} 
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron bonos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %} 
+{% block title %}Consulta nombre proveedores{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <h1 class="text-center"><b>Proveedores</b></h1>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_nombre_proveedor" class="form-control me-2" type="search" placeholder="Buscar proveedor" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("/busqueda_nombre_proveedor?busqueda="+ document.getElementById("busqueda_nombre_proveedor").value, "_self");' type="submit">Buscar</a>
+              </form>
+              <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_producto_proveedor" class="form-control me-2" type="search" placeholder="Buscar por productos" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("/busqueda_producto_proveedor?busqueda="+ document.getElementById("busqueda_producto_proveedor").value, "_self");' type="submit">Buscar</a>
+              </form>
+              <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_ciudad_proveedor" class="form-control me-2" type="search" placeholder="Buscar por ciudad" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("busqueda_ciudad_proveedor?busqueda="+ document.getElementById("busqueda_ciudad_proveedor").value, "_self");' type="submit">Buscar</a>
+              </form>
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por país
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="busqueda_pais_proveedor?busqueda=Costa+Rica">Costa Rica</a></li>
+                <li><a class="dropdown-item" href="busqueda_pais_proveedor?busqueda=Guatemala">Guatemala</a></li>
+                <li><a class="dropdown-item" href="busqueda_pais_proveedor?busqueda=Panama">Panama</a></li>
+              </ul>
+        </div>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% if proveedores %}
+            {% set count = namespace(value=0) %}
+            {% for row in proveedores: %}
+            {% if busqueda in row.ciudad.upper() %}
+            {% set count.value = count.value + 1 %}
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <br />
+                            <h3 id="nombre_proveedor" class="fw-bolder"><b>{{row.nombre}}</b></h3>
+                            <!-- Product price-->
+                            <b>Pais:</b> {{ row.pais }}
+                            <br />
+                            <br />
+                            <b>Ciudad:</b> {{ row.ciudad }}
+                            <br />
+                            <br />
+                            <b>Ubicación espacial:</b> {{ row.localizacion_espacial }}
+                            <br />
+                            <br />
+                            <b>Porcentaje de precio de venta:</b> {{row.porcentaje}}%
+                            <br />
+                            <br />
+                            <b>Correo:</b> {{ row.correo }}
+                            <br />
+                            <br />
+                            <b>Teléfono:</b> {{ row.telefono }}
+                        </div>
+                    </div>
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center"><a id="myBtn-{{row.producto_ID}}" class="btn btn-outline-dark mt-auto" onclick='javascript: window.open("/productos_proveedor?busqueda="+ nombre_proveedor.textContent, "_self");'>Ver sus productos</a></div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% if count.value == 0 %}
+                <br />
+                <br />
+                <br />
+                <br />
+                <div class="container-fluid">
+                    <div class="text-center text-black">
+                        <h1 class="fw-bolder">No se encontraron proveedores.</h1>
+                    </div>
+                </div>
+                {% endif %}
+            {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron proveedores.</h1>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

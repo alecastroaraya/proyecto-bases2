@@ -1,0 +1,127 @@
+{% extends "base.html" %} 
+{% block title %}Consultar empleados{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de empleados</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form method="GET" class="d-inline-flex p-2">
+                <input id="busqueda_fecha1" class="form-control me-2" type="search" placeholder="Fecha #1: YYYY-MM-DD" aria-label="Search">
+                <input id="busqueda_fecha2" class="form-control me-2" type="search" placeholder="Fecha #2: YYYY-MM-DD" aria-label="Search">
+                <a class="btn btn-outline-success" onclick='javascript: window.open("consultar_empleados_fechas?fecha1="+document.getElementById("busqueda_fecha1").value+"&fecha2="+document.getElementById("busqueda_fecha2").value, "_self");' type="submit">Buscar por fecha</a>
+              </form>
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por sucursal
+              </button>
+              <ul class="dropdown-menu">
+                {% for row in sucursales %}
+                <li><a class="dropdown-item" href="/consultar_empleados_sucursal?sucursal={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+              </ul>
+              <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar por puesto
+              </button>
+              <ul class="dropdown-menu">
+                {% for row in puestos %}
+                <li><a class="dropdown-item" href="/consultar_empleados_puestos?puesto={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+              </ul>
+          </form>
+        </div>
+        <br />
+        {% if fecha1 and fecha2 %}
+        <h3>Viendo empleados por fechas: De {{fecha1}} a {{fecha2}}</h3>
+            {% else %}
+            <h3>Viendo empleados por fechas</h3>
+            {% endif %}
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Cédula</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>
+        <th scope="col">Correo</th>
+        <th scope="col">Teléfono</th>
+        <th scope="col">Fecha contratación</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">Puesto</th>
+        <th scope="col">Filename de foto</th>
+        <th scope="col">Administrador</th>
+        <th scope="col">Salario base</th>
+        <th scope="col">Tipo cambio</th>
+        <th scope="col">Salario convertido</th>
+        <th scope="col">País</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if empleados %}
+        {% set count = namespace(value=0) %}
+        {% for row in empleados %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {{row[1]}}
+        </td>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[4]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[6]}}
+        </td>
+        <td>
+            {{row[7]}}
+        </td>
+        <td>
+            {{row[8]}}
+        </td>
+        <td>
+            {{row[9]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[11]}} dólares
+        </td>
+        <td>
+            {{row[13]}}
+        </td>
+        <td>
+            {{row[14]}} {{row[12]}}
+        </td>
+        <td>
+            {{row[15]}}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron empleados.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

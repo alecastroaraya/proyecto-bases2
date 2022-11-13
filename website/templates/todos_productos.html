@@ -1,0 +1,72 @@
+{% extends "base.html" %} 
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+<main>
+    <!-- Section-->
+    <section class="py-5">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                {% if products %}
+                {% for row in products: %}
+                <div class="col mb-5">
+                    <div class="card h-100">
+                        {% if row.en_descuento==1 %}
+                        <!-- Sale badge-->
+                        <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Rebaja: {{ row.porcentaje_descuento }}%</div>
+                        {% endif %}
+                        <!-- Product image-->
+                        <img class="card-img-top" src={{row.filename}}} alt="Error" />
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center">
+                                <!-- Product name-->
+                                <h5 class="fw-bolder">{{row.nombre}}</h5>
+                                <!-- Product price-->
+                                {% if row.en_descuento==1 %}
+                                <span class="text-muted text-decoration-line-through">{{row.precio}}</span>
+                                {% endif %}
+                                {% if row.tiene_impuesto=='1' %}
+                                {{ (row.precio - ((row.porcentaje_descuento/100)*row.precio))+(row.precio*(row.impuesto_porcentaje/100)) }} {{row.moneda_nombre}}
+                                {% else %}
+                                {{ row.precio - ((row.porcentaje_descuento/100)*row.precio) }} {{row.moneda_nombre}}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <!-- Product actions-->
+                        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                            <div class="text-center"><a id="myBtn-{{row.producto_ID}}" class="btn btn-outline-dark mt-auto" href="/producto?producto_ID={{row.producto_ID}}">Ver producto</a></div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <br />
+                <br />
+                <br />
+                <br />
+                <div class="container-fluid">
+                    <div class="text-center text-black">
+                        <h1 class="fw-bolder">No se encontraron productos.</h1>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <script>
+        function showPosition() {
+            if(navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var positionInfo = "Your current position is (" + position.coords.longitude + " " + position.coords.latitude + ")";
+                    document.getElementById("result").innerHTML = positionInfo;
+                });
+            } else {
+                alert("Sorry, your browser does not support HTML5 geolocation.");
+            }
+        }
+    </script>
+</main>
+</div>
+{% endblock %}

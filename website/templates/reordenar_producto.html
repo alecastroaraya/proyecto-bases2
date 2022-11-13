@@ -1,0 +1,109 @@
+{% extends "base.html" %} 
+{% block title %}Productos proveedor{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de productos de los proveedores</h2>
+        <br />
+    <h3>Viendo todos los productos cuya cantidad está por debajo del mínimo</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID producto</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">ID Sucursal</th>
+        <th scope="col">País</th>
+        <th scope="col">Producto</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Categoría</th>
+        <th scope="col">Porcentaje impuesto</th>
+        <th scope="col">Mínimo</th>
+        <th scope="col">Máximo</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Faltan para máximo</th>
+        <th scope="col">ID de proveedor</th>
+        <th scope="col">Precio base</th>
+        <th scope="col">Proveedor</th>
+        <th scope="col">Porcentaje proveedor</th>
+        <th scope="col">Reordenar</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if productos %}
+        {% set count = namespace(value=0) %}
+        {% for row in productos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[1]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[6]}}
+        </td>
+        <td>
+            {{row[7]}}
+        </td>
+        <td>
+            {{row[8]}}%
+        </td>
+        <td>
+            {{row[9]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[16]}}
+        </td>
+        <td>
+            {{row[11]}}
+        </td>
+        <td>
+            {{row[14]}}
+        </td>
+        <td>
+            {{row[12]}} {{row[4]}}
+        </td>
+        <td>
+            {{row[13]}} 
+        <td>
+            {{row[15]}}%
+        </td>
+        <td>
+            <form class="d-inline-flex p-2">
+                <a id="btn_reorden" class="btn btn-outline-dark" href="/reordenar_producto_pedido?producto_ID={{row[0]}}&sucursal_ID={{row[1]}}" role="button">
+                    Reordenar
+            </a>
+        </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron productos con cantidad menor al mínimo.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

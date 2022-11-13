@@ -1,0 +1,69 @@
+{% extends "base.html" %} 
+{% block title %}Cambiar foto anual{% endblock %}
+{% block content %}
+<form method="POST">
+    <br />
+    <body class="text-left">
+        <div class="container">
+            <main class="form-signup">
+                <form>
+
+                    <h3 class="text-center">Cambiar foto anual</h3>
+
+                    <div class="form-group">
+                        <label for="link_imagen">Link a la imagen anual</label>
+                        <input required
+                            type="url" 
+                            class="form-control" 
+                            id="link_imagen" 
+                            name="link_imagen" 
+                            placeholder="Ingrese su link de imagen anual"
+                        />
+                    </div>
+
+                    <div class="card-body text-center">
+                        <h1 id="imagen_actual_text" class="my-3">Su imagen actual:</h1>
+                        {% if filename_cambiar %}
+                        <img id="imagen_usuario" src="{{filename_cambiar}}" alt="avatar"
+                          class="rounded-circle img-fluid" style="width: 150px;">
+                        {% else %}
+                        <img id="imagen_usuario" src="{{filename}}" alt="avatar"
+                          class="rounded-circle img-fluid" style="width: 150px;">
+                        {% endif %}
+                      </div>
+                    
+                    {% if filename_cambiar %}
+                    <script>
+                        if (JSON.parse(sessionStorage.getItem("usuario"))){
+                            data = JSON.parse(sessionStorage.getItem("usuario"))
+                            data.foto_filename = "{{filename_cambiar}}";
+                            sessionStorage.setItem("usuario", JSON.stringify(data));
+                        }
+                    </script>
+                    {% endif %}
+                    
+                    <br />
+                    <div class="col text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    <div id="result">
+                        <!--Position information will be inserted here-->
+                    </div>
+                </form>
+            </main>
+        </div>
+        <script>
+            function showPosition() {
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var positionInfo = "Your current position is (" + position.coords.longitude + " " + position.coords.latitude + ")";
+                        document.getElementById("result").innerHTML = positionInfo;
+                    });
+                } else {
+                    alert("Sorry, your browser does not support HTML5 geolocation.");
+                }
+            }
+        </script>
+    </body>
+</form>
+{% endblock %}

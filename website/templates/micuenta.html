@@ -1,0 +1,126 @@
+{% extends "base.html" %} 
+{% block title %}Mi cuenta{% endblock %}
+{% block content %}
+<section style="background-color: #eee;">
+    <div class="container py-5">
+  
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-body text-center">
+              <img id="imagen_usuario" src="https://cdn3.iconfinder.com/data/icons/dashboard-ui-element/32/Dashboard_icon_design_expanded-28-512.png" alt="avatar"
+                class="rounded-circle img-fluid" style="width: 150px;">
+              <h5 id="nombre_completo_display" class="my-3">John Smith</h5>
+              <p id="direccion_display" class="text-muted mb-4">Bay Area, San Francisco, CA</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Nombre completo</p>
+                </div>
+                <div class="col-sm-9">
+                  <p id="nombre_completo" class="text-muted mb-0">Johnatan Smith</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Correo</p>
+                </div>
+                <div class="col-sm-9">
+                  <p id="correo" class="text-muted mb-0">example@example.com</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Cédula</p>
+                </div>
+                <div class="col-sm-9">
+                  <p id="cedula" class="text-muted mb-0">(097) 234-5678</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Teléfono</p>
+                </div>
+                <div class="col-sm-9">
+                  <p id="telefono" class="text-muted mb-0">(098) 765-4321</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p id="label_ubicacion" class="mb-0">Ubicación</p>
+                </div>
+                <div class="col-sm-9">
+                  <p id="domicilio" class="text-muted mb-0">(098) 765-4321</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p id="label_direccion" class="mb-0">Dirección</p>
+                </div>
+                <div class="col-sm-9">
+                  <p id="direccion" class="text-muted mb-0">Bay Area, San Francisco, CA</p>
+                </div>
+              </div>
+              <div hidden id="div_administrador" class="row">
+                <hr>
+                <div class="col-sm-3">
+                  <p hidden id="label_administrador" class="mb-0">Administrador</p>
+                </div>
+                <div class="col-sm-9">
+                  <p hidden id="administrador" class="text-muted mb-0">No</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script>
+    if (sessionStorage.getItem("usuario")){
+        var usuario = JSON.parse(sessionStorage.getItem("usuario"));
+        if (!JSON.parse(sessionStorage.getItem("usuario")).es_administrador){
+          document.getElementById("nombre_completo").innerHTML=usuario.nombre+" "+usuario.apellido
+          document.getElementById("nombre_completo_display").innerHTML=usuario.nombre+" "+usuario.apellido
+          document.getElementById("direccion_display").innerHTML=usuario.direccion
+          document.getElementById("direccion").innerHTML=usuario.direccion
+          document.getElementById("correo").innerHTML=usuario.correo
+          document.getElementById("cedula").innerHTML=usuario.cedula
+          document.getElementById("telefono").innerHTML=usuario.numero
+          document.getElementById("domicilio").innerHTML=usuario.domicilio
+          }
+        else{
+          document.getElementById("nombre_completo").innerHTML=usuario.nombre+" "+usuario.apellido
+          document.getElementById("nombre_completo_display").innerHTML=usuario.nombre+" "+usuario.apellido
+          document.getElementById("direccion_display").innerHTML=usuario.puesto
+          document.getElementById("direccion").innerHTML=usuario.puesto
+          document.getElementById("correo").innerHTML=usuario.correo
+          document.getElementById("cedula").innerHTML=usuario.cedula
+          document.getElementById("telefono").innerHTML=usuario.numero
+          document.getElementById("domicilio").innerHTML=usuario.salario_base
+          document.getElementById("label_ubicacion").innerHTML="Salario base (dólares)"
+          document.getElementById("label_direccion").innerHTML="Puesto"
+          document.getElementById("div_administrador").hidden=false;
+          document.getElementById("label_administrador").hidden=false;
+          document.getElementById("administrador").hidden=false;
+          document.getElementById("imagen_usuario").src=usuario.foto_filename;
+          if (usuario.es_administrador=='1'){
+            document.getElementById("administrador").innerHTML="Sí";
+          }
+        }
+
+    }
+  </script>
+{% endblock %}

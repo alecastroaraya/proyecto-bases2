@@ -1,0 +1,63 @@
+{% extends "base.html" %} 
+{% block title %}Historial de pagos de salario{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de pagos de salario</h2>
+    <div class="container-fluid">
+        <br />
+    <h3>Viendo historial de pagos de salario</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID pago</th>
+        <th scope="col">Cédula</th>
+        <th scope="col">Fecha pago</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Monto pagado</th>
+        <th scope="col">Bono otorgado?</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if pagos %}
+        {% set count = namespace(value=0) %}
+        {% for row in pagos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {{row[1]}}
+        </td>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[4]}} {{row[6]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron pagos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

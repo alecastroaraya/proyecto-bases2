@@ -1,0 +1,130 @@
+{% extends "base.html" %} 
+{% block title %}Producto{% endblock %}
+{% block content %}
+<br />
+<br />
+<br />
+<br />
+
+                {% if products and products_images %}
+                {% for row in products: %}
+                <div class="container mt-5 mb-5">
+                    <div class="row d-flex justify-content-center">
+                        <div class="col-md-10">
+                            <div class="card">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        {% for image in products_images %}
+                                        <div class="images p-3">
+                                            <div class="text-center p-4"> <img id="main-image" src="{{ image.filename }}" width="200" /> </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="product p-4">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <a class="btn btn-outline-dark" href="/proveedores" role="button">
+                                                    Volver
+                                                </a>
+                                            </div>
+                                            <div class="mt-4 mb-3"> <span class="text-uppercase text-muted brand">Proveedor: {{ row.nombre_proveedor }}</span>
+                                                <h5 class="text-uppercase">{{ row.producto }}</h5>
+                                                <div class="text-left">
+                                                    <!-- Product price-->
+                                                    <b>Precio base:</b> {{ row.precio }} {{ row.moneda_nombre }}
+                                                    <br />
+                                                    {% if row.en_descuento=='1' %}
+                                                    <b>Descuento:</b> {{ row.porcentaje_descuento }}%
+                                                    <br />
+                                                    {% endif %}
+                                                    {% if row.tiene_impuesto=='1' %}
+                                                    <b>Impuesto:</b> {{ row.impuesto_porcentaje }}%
+                                                    {% endif %}
+                                                    <br />
+                                                    <br />
+                                                    <h5><b>Precio total</b></h5>
+                                                    {% if row.en_descuento=='1' %}
+                                                    <span class="text-muted text-decoration-line-through">{{ (row.precio +(row.precio*(row.impuesto_porcentaje/100)) )}} {{row.moneda_nombre}}</span>
+                                                    {% endif %}
+                                                    {% if row.tiene_impuesto=='1' %}
+                                                    {{ row.precio - ((row.porcentaje_descuento/100)*row.precio)+(row.precio*(row.impuesto_porcentaje/100)) }} {{row.moneda_nombre}}
+                                                    {% else %}
+                                                    {{ row.precio - ((row.porcentaje_descuento/100)*row.precio) }} {{row.moneda_nombre}}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <p class="about"><b>Descripción del producto:</b> {{ row.descripcion }}</p>
+                                            <div class="sizes mt-5">
+                                                <h6 class="text-uppercase">Categoría: {{ row.categoria }}</h6>
+                                            </div>
+                                            <b>Ingrese la cantidad deseada:</b> <input id="amount_picker" value="1" type="number" placeholder="1" min="1" max="{{ row.cantidad }}" step="1" class="form-control" id="amountInput">
+                                            <div class="cart mt-4 align-items-center"> <a class="btn btn-danger text-uppercase mr-2 px-4" onclick="addToCart({nombre:'{{row.nombre}}',descripcion:'{{row.descripcion}}', producto_ID:'{{row.producto_ID}}',categoria:'{{row.categoria}}',tiene_impuesto:'{{row.tiene_impuesto}}',impuesto_porcentaje:'{{row.impuesto_porcentaje}}',en_descuento:'{{row.en_descuento}}',porcentaje_descuento:'{{row.porcentaje_descuento}}',precio:'{{row.precio}}',proveedor:'{{row.proveedor}}',moneda_nombre:'{{row.moneda_nombre}}',cantidad: document.getElementById('amount_picker').value});">Agregar al carrito</a> <i class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+                {% endfor %}
+                {% else %}
+                <br />
+                <br />
+                <br />
+                <br />
+                <div class="container-fluid">
+                    <div class="text-center text-black">
+                        <h1 class="fw-bolder">No se encontraron productos.</h1>
+                    </div>
+                </div>
+                {% endif %}
+
+<script>
+function getQueryVariable(variable){
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+        var pair = vars[i].split("=");
+        if(pair[0] == variable){return pair[1];}
+    }
+    return(false);
+}
+function addToCart(producto){
+    var productos = []
+
+    if (sessionStorage.getItem("usuario")){
+        if (document.getElementById("amount_picker").value=="0"){
+            window.alert("Debe elegir al menos 1 vez al producto deseado.")
+        }
+        else if(!Number.isInteger(parseInt(document.getElementById("amount_picker").value))){
+            window.alert("Debe escribir un número entero.")
+        }
+        else if(parseInt(document.getElementById("amount_picker").value)>parseInt("{{products[0][22]}}")){
+            window.alert("No se tiene suficiente inventario del producto para completar esta compra, actualmente se tiene '{{products[0][22]}}' del producto.")
+        }
+        else{
+            var result = JSON.parse(sessionStorage.getItem("productos"));
+
+        if (!result) {
+            productos.push(producto);
+            sessionStorage.setItem("productos", JSON.stringify(productos));
+
+            var amount_cart = JSON.parse(sessionStorage.getItem("productos")).length;
+            document.getElementById("numero_carrito").innerHTML = amount_cart;
+            }
+        else if (result){
+            var stored = JSON.parse(sessionStorage.getItem("productos"));
+            stored.push(producto);
+            sessionStorage.setItem("productos", JSON.stringify(stored));
+
+            var amount_cart = JSON.parse(sessionStorage.getItem("productos")).length;
+            document.getElementById("numero_carrito").innerHTML = amount_cart;
+            }
+        }
+    }
+    else{
+        window.alert("Debe iniciar sesión para comprar productos.")
+    }
+}
+</script>
+{% endblock %}

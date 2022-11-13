@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Favicon-->
+    <link href="https://cdn.icon-icons.com/icons2/2699/PNG/512/walmart_logo_icon_170230.png" type="image/x-icon" rel="icon" />
+    <!-- Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+    integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+    crossorigin=""/>
+    <title>{% block title %}Home{% endblock %}</title>
+  </head>
+  <body onload="changeNumber();">
+    <div hidden id="ubicacion">
+      <!--Conseguir ubicacion-->
+  </div>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top bg-light">
+        <div class="container-lg">
+          <a href="/" class="navbar-brand">
+            <!-- Logo Image -->
+            <img src="https://cdn.icon-icons.com/icons2/2699/PNG/512/walmart_logo_icon_170230.png" width="45" alt="" class="d-inline-block align-middle mr-2">
+            <!-- Logo Text -->
+            <span class="navbar-brand" href="/">alemart</span>
+          </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sucursales</a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li><a class="dropdown-item" onclick='showPosition("sucursales")'>Consultar sucursales</a></li>
+                      </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Proveedores</a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          <li><a class="dropdown-item" href="/proveedores">Consultar proveedores</a></li>
+                      </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categorías</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/todos_productos">Todos los productos</a></li>
+                            <li><hr class="dropdown-divider" /></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Abarrotes">Abarrotes</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Jugos+y+bebidas">Jugos y bebidas</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Licores">Licores</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Alimentos+congelados">Alimentos congelados</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Panaderia">Panadería</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Lacteos">Lácteos</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Embutidos">Embutidos</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Frutas+y+verduras">Frutas y verduras</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Carnes+y+pescados">Carnes y pescados</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Hogar">Hogar</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Electronica">Electrónica</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Higiene">Higiene</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Mascotas">Mascotas</a></li>
+                            <li><a class="dropdown-item" href="/categoria?nombre_categoria=Bebes+y+chiquitos">Bebés y chiquitos</a></li>
+                        </ul>
+                    </li>
+                  <li id="li_empleado" hidden class="nav-item dropdown">
+                    <a hidden class="nav-link dropdown-toggle" id="empleadoDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Opciones empleado</a>
+                    <ul hidden id="ul_empleado" class="dropdown-menu" aria-labelledby="empleadoDropdown">
+                        <li><a class="dropdown-item" onclick='javascript: checkAdmin("/pagar_salario")'>Pagar salario / otorgar bono</a></li>
+                        <li><a class="dropdown-item" onclick='javascript: checkAdmin("/generar_reportes")'>Generar reportes</a></li>
+                        <li><a class="dropdown-item" onclick='javascript: checkAdmin("/ingresar_empleado")'>Ingresar empleados</a></li>
+                        <li><a class="dropdown-item" href="/consultar_empleados">Consultar empleados</a></li>
+                        <li><a class="dropdown-item" onclick='javascript: window.open("/cambiar_foto_anual?filename="+JSON.parse(sessionStorage.getItem("usuario")).foto_filename+"&cedula="+JSON.parse(sessionStorage.getItem("usuario")).cedula, "_self");'>Subir/cambiar foto anual</a></li>
+                        <li><a class="dropdown-item" href="/revisar_productos">Revisar productos expirados</a></li>
+                        <li><a class="dropdown-item" href="/reordenar_producto">Realizar pedido proveedores</a></li>
+                        <li><a class="dropdown-item" href="/consultar_montos_recolectados">Consultar montos recolectados</a></li>
+                        <li><a class="dropdown-item" href="/consultar_bonos">Consultar bonos recibidos</a></li>
+                        <li><a class="dropdown-item" href="/consultar_ganancias_netas">Consultar ganancias netas</a></li>
+                    </ul>
+                </li>
+                </ul>
+                <form method="GET" class="d-inline-flex p-2">
+                  <input id="search" class="form-control me-2" type="search" placeholder="Buscar producto" aria-label="Search">
+                  <a class="btn btn-outline-success" onclick='javascript: window.open("/busqueda_producto?busqueda="+ document.getElementById("search").value, "_self");' type="submit">Buscar</a>
+                </form>
+     
+                <form class="d-inline-flex p-2">
+                    <a hidden id="btn_carrito" class="btn btn-outline-dark" onclick='javascript: checkItemNumber();' type="submit">
+                        <i class="bi-cart-fill me-1"></i>
+                        Carrito
+                        <span id="numero_carrito" class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                      </a>
+                </form>
+
+                <form class="d-inline-flex p-2">
+                  <a hidden id="btn_limpiar_carrito" class="btn btn-outline-dark" onclick='javascript: clearCart();' type="submit">
+                      Limpiar carrito
+                    </a>
+              </form>
+
+                <form class="d-inline-flex p-2">
+                  <a id="btn_iniciar_sesion" class="btn btn-outline-dark" onclick='javascript: changeNumber();window.open("/login", "_self");' role="button">
+                      Iniciar sesión
+                  </a>
+              </form>
+              <form method="POST" class="d-inline-flex p-2">
+                <a id="btn_crear_cuenta" class="btn btn-outline-dark" onclick='showPosition("signup")' role="button">
+                    Crear cuenta
+                </a>
+            </form>
+            
+            <form class="d-inline-flex p-2">
+              <a hidden id="btn_mi_cuenta" class="btn btn-outline-dark" href="/micuenta" role="button">
+                  Mi cuenta
+              </a>
+          </form>
+          <form class="d-inline-flex p-2">
+            <a hidden id="btn_cerrar_sesion" class="btn btn-outline-dark" onclick='javascript: logOut();window.open("/logout", "_self");' role="button">
+                Cerrar sesión
+            </a>
+        </form>
+            {% if usuario and not es_empleado %}
+        <script>
+          
+          var usuario = '{"cedula":"{{usuario[0][0]}}","nombre":"{{usuario[0][1]}}","apellido":"{{usuario[0][2]}}","correo":"{{usuario[0][3]}}","numero":"{{usuario[0][4]}}","domicilio":"{{usuario[0][5]}}","direccion":"{{usuario[0][6]}}"}'
+          console.log(JSON.parse(usuario))
+          if (!sessionStorage.getItem("usuario")){
+            sessionStorage.setItem("usuario", usuario);
+            console.log("Se ha hecho log in.")
+          }
+          else if (sessionStorage.getItem("usuario")){
+            console.log("Ya está logged in")
+          }
+        </script>
+        {% elif usuario and es_empleado %}
+        <script>
+          
+          var usuario = '{"cedula":"{{usuario[0][0]}}","nombre":"{{usuario[0][1]}}","apellido":"{{usuario[0][2]}}","correo":"{{usuario[0][3]}}","numero":"{{usuario[0][5]}}","puesto":"{{usuario[0][9]}}","foto_filename":"{{usuario[0][10]}}","es_administrador":"{{usuario[0][11]}}","salario_base":"{{usuario[0][12]}}"}'
+          console.log(JSON.parse(usuario))
+          if (!sessionStorage.getItem("usuario")){
+            sessionStorage.setItem("usuario", usuario);
+            console.log("Se ha hecho log in.")
+          }
+          else if (sessionStorage.getItem("usuario")){
+            console.log("Ya está logged in")
+          }
+        </script>
+        {% endif %}
+        </div>
+        </div>
+    </nav>
+    <br />
+    <br />
+    <br />
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %} {% if category ==
+    'error' %}
+    <div class="alert alert-danger alter-dismissable fade show" role="alert">
+    {{ message }}
+    </div>
+    {% else %}
+    <div class="alert alert-success alter-dismissable fade show" role="alert">
+      {{ message }}
+    </div>
+    {% endif %} {% endfor %} {% endif %} {% endwith %}
+
+    {% block content %} {% endblock %}
+    
+    <!-- Footer-->
+    <footer class="py-3 bg-dark fixed-bottom">
+        <div class="container">
+          <p class="m-0 text-center text-white">Copyright &copy; Alemart 2022</p></div>
+          <p class="m-0 text-center text-white"> <a href="#">Volver a la cima</a> </p>
+        </div>
+    </footer>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js" integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Core theme JS-->
+    <script>
+      function showPosition(option) {
+        if (option=="sucursales"){
+          if(navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function(position) {
+                  var positionInfo = position.coords.longitude + "+" + position.coords.latitude;
+                  document.getElementById("ubicacion").innerHTML = positionInfo;
+                  window.open("/informacion_sucursales?ubicacion="+ document.getElementById("ubicacion").innerHTML, "_self");
+              });
+          } else {
+              alert("Sorry, your browser does not support HTML5 geolocation.");
+          }
+        }
+        else if(option=="signup"){
+          if(navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function(position) {
+                  var positionInfo = position.coords.longitude + "+" + position.coords.latitude;
+                  document.getElementById("ubicacion").innerHTML = positionInfo;
+                  window.open("/signup?ubicacion="+ document.getElementById("ubicacion").innerHTML, "_self");
+              });
+          } else {
+              alert("Sorry, your browser does not support HTML5 geolocation.");
+          }
+        }
+        else if(option=="checkout"){
+          if(navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function(position) {
+                  var positionInfo = position.coords.longitude + "+" + position.coords.latitude;
+                  document.getElementById("ubicacion").innerHTML = positionInfo;
+                  window.open("/checkout?ubicacion="+ document.getElementById("ubicacion").innerHTML, "_self");
+              });
+          } else {
+              alert("Sorry, your browser does not support HTML5 geolocation.");
+          }
+        }
+      }
+
+      function changeNumber() {
+        console.log('{{comprado}}')
+        if ('{{comprado}}'){
+          sessionStorage.removeItem("productos")
+          document.getElementById("numero_carrito").innerHTML = 0;
+        }
+        if (JSON.parse(sessionStorage.getItem("productos"))){
+          var amount_cart = JSON.parse(sessionStorage.getItem("productos")).length;
+          document.getElementById("numero_carrito").innerHTML = amount_cart;
+          if ( document.getElementById("checkout_numero_carrito") ){
+            document.getElementById("checkout_numero_carrito").innerHTML = amount_cart;
+          }
+        }
+        if (JSON.parse(sessionStorage.getItem("usuario"))){
+          document.getElementById("btn_iniciar_sesion").hidden=true;
+          document.getElementById("btn_crear_cuenta").hidden=true;
+          document.getElementById("btn_mi_cuenta").hidden=false;
+          document.getElementById("btn_cerrar_sesion").hidden=false;
+          document.getElementById("btn_carrito").hidden=false;
+          document.getElementById("btn_limpiar_carrito").hidden=false;
+          if (JSON.parse(sessionStorage.getItem("usuario")).es_administrador){
+            document.getElementById("btn_carrito").hidden=true;
+            document.getElementById("btn_limpiar_carrito").hidden=true;
+            document.getElementById("li_empleado").hidden=false;
+            document.getElementById("empleadoDropdown").hidden=false;
+            document.getElementById("ul_empleado").hidden=false;
+          }
+        }
+        else if (!JSON.parse(sessionStorage.getItem("usuario"))){
+          document.getElementById("btn_iniciar_sesion").hidden=false;
+          document.getElementById("btn_crear_cuenta").hidden=false;
+          document.getElementById("btn_mi_cuenta").hidden=true;
+          document.getElementById("btn_cerrar_sesion").hidden=true;
+          document.getElementById("btn_carrito").hidden=true;
+          document.getElementById("btn_limpiar_carrito").hidden=true;
+        }
+        
+      }
+
+      function logOut(){
+        if (JSON.parse(sessionStorage.getItem("productos"))){
+          sessionStorage.clear();
+        }
+
+        if (JSON.parse(sessionStorage.getItem("usuario"))){
+          sessionStorage.clear();
+        }
+      }
+
+      function checkItemNumber(){
+        if (!sessionStorage.getItem("productos")){
+          window.alert("No tiene productos agregados al carrito.");
+        }
+        else{
+          showPosition("checkout");
+        }
+      }
+
+      function clearCart(){
+        if (sessionStorage.getItem("productos")){
+          sessionStorage.removeItem("productos")
+          document.getElementById("numero_carrito").innerHTML = 0;
+        }
+        else{
+          window.alert("No tiene productos agregados al carrito.");
+        }
+      }
+
+      function checkAdmin(redirectURL){
+        if (JSON.parse(sessionStorage.getItem("usuario")).es_administrador=='1'){
+          window.open(redirectURL, "_self");
+        }
+        else{
+          window.alert("Esta opción solo puede ser usada por un administrador.")
+        }
+      }
+  </script>
+</body>
+</html>

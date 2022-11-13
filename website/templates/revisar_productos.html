@@ -1,0 +1,121 @@
+{% extends "base.html" %} 
+{% block title %}Revisar productos{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de productos</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar productos expirados por sucursal
+              </button>
+              <ul class="dropdown-menu">
+                {% for row in sucursales %}
+                <li><a class="dropdown-item" href="/revisar_expirados?sucursal={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+              </ul>
+            <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Buscar productos que expiran en una semana por sucursal
+            </button>
+            <ul class="dropdown-menu">
+                {% for row in sucursales %}
+                <li><a class="dropdown-item" href="/revisar_casi_expirados?sucursal={{row.nombre}}">{{row.nombre}}</a></li>
+                {% endfor %}
+            </ul>
+
+        </div>
+        <br />
+    <h3>Viendo todos los productos</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID producto</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">País</th>
+        <th scope="col">Producto</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Categoría</th>
+        <th scope="col">Porcentaje impuesto</th>
+        <th scope="col">Mínimo</th>
+        <th scope="col">Máximo</th>
+        <th scope="col">Fecha producción</th>
+        <th scope="col">Fecha expiración</th>
+        <th scope="col">Precio base</th>
+        <th scope="col">Proveedor</th>
+        <th scope="col">Porcentaje proveedor</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Porcentaje descuento</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if productos %}
+        {% set count = namespace(value=0) %}
+        {% for row in productos %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[4]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[6]}}
+        </td>
+        <td>
+            {{row[8]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[11]}}
+        </td>
+        <td>
+            {{row[12]}}
+        </td>
+        <td>
+            {{row[13]}}
+        </td>
+        <td>
+            {{row[14]}}
+        </td>
+        <td>
+            {{row[16]}} {{row[28]}}
+        </td>
+        <td>
+            {{row[19]}}
+        </td>
+        <td>
+            {{row[20]}}
+        <td>
+            {{row[21]}}
+        </td>
+        <td>
+            {{row[23]}}
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron productos.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}

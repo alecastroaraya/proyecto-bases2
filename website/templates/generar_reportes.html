@@ -1,0 +1,31 @@
+{% extends "base.html" %} 
+{% block title %}Generar reportes{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Generar reportes</h2>
+    <div class="container-fluid">
+        <div class="text-center">
+            <form class="d-inline-flex p-2">
+                <a id="btn_productos_mas_vendidos" class="btn btn-outline-dark" href="/productos_mas_vendidos" role="button">
+                    Productos más vendidos
+                </a>
+            </form>
+            <form class="d-inline-flex p-2">
+                <a id="btn_clientes_mas_frecuentes" class="btn btn-outline-dark" href="/clientes_mas_frecuentes" role="button">
+                    Clientes más frecuentes
+                </a>
+            </form>
+            <form class="d-inline-flex p-2">
+                <a id="btn_productos_expirados" class="btn btn-outline-dark" href="/productos_expirados" role="button">
+                    Productos expirados
+                </a>
+            </form>
+            
+        </div>
+        <br />
+    <h1>Por favor seleccione una opción para generar el reporte</h1>
+    <br />
+</div>
+{% endblock %}

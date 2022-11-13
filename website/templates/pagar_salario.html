@@ -1,0 +1,117 @@
+{% extends "base.html" %} 
+{% block title %}Pagar salario{% endblock %}
+{% block content %}
+<br />
+<br />
+<div class="py-5 text-center">
+    <h2>Información de los empleados</h2>
+    <form class="d-inline-flex p-2">
+        <a id="btn_pagos_salario" class="btn btn-outline-dark" href="/pagar_salario_ver_pagos" role="button">
+            Ver historial de pagos de salario
+        </a>
+    </form>
+    <form class="d-inline-flex p-2">
+        <a id="btn_bonos" class="btn btn-outline-dark" href="/pagar_salario_ver_bonos" role="button">
+            Ver historial de bonos otorgados
+        </a>
+    </form>
+    <form class="d-inline-flex p-2">
+        <a id="btn_bonos" class="btn btn-outline-dark" href="/pagar_salario_bono_facturador" role="button">
+            Bono de facturador
+        </a>
+    </form>
+        <br />
+    <h3>Viendo todos los empleados</h3>
+    <br />
+</div>
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Cédula</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>
+        <th scope="col">Correo</th>
+        <th scope="col">Teléfono</th>
+        <th scope="col">Fecha contratación</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Sucursal</th>
+        <th scope="col">Puesto</th>
+        <th scope="col">Administrador</th>
+        <th scope="col">Salario base</th>
+        <th scope="col">Tipo cambio</th>
+        <th scope="col">Salario convertido</th>
+        <th scope="col">País</th>
+        <th scope="col">Pagar salario</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% if empleados %}
+        {% set count = namespace(value=0) %}
+        {% for row in empleados %}
+        {% set count.value = count.value + 1 %}
+      <tr>
+        <th scope="row">
+            {{row[0]}}
+        </th>
+        <td>
+            {{row[1]}}
+        </td>
+        <td>
+            {{row[2]}}
+        </td>
+        <td>
+            {{row[3]}}
+        </td>
+        <td>
+            {{row[4]}}
+        </td>
+        <td>
+            {{row[5]}}
+        </td>
+        <td>
+            {{row[6]}}
+        </td>
+        <td>
+            {{row[7]}}
+        </td>
+        <td>
+            {{row[8]}}
+        </td>
+        <td>
+            {{row[10]}}
+        </td>
+        <td>
+            {{row[11]}} dólares
+        </td>
+        <td>
+            {{row[13]}}
+        </td>
+        <td>
+            {{row[14]}} {{row[12]}}
+        </td>
+        <td>
+            {{row[15]}}
+        </td>
+        <td>
+            <form class="d-inline-flex p-2">
+                <a id="btn_reorden" class="btn btn-outline-dark" href="/pagar_salario_empleado?cedula={{row[0]}}" role="button">
+                    Pagar salario
+            </a>
+        </form>
+        </td>
+      </tr>
+      {% endfor %}
+      {% else %}
+            <br />
+            <br />
+            <br />
+            <br />
+            <div class="container-fluid">
+                <div class="text-center text-black">
+                    <h1 class="fw-bolder">No se encontraron empleados.</h1>
+                </div>
+            </div>
+      {% endif %}
+    </tbody>
+  </table>
+{% endblock %}
