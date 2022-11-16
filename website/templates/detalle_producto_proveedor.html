@@ -57,8 +57,7 @@
                                             <div class="sizes mt-5">
                                                 <h6 class="text-uppercase">Categoría: {{ row.categoria }}</h6>
                                             </div>
-                                            <b>Ingrese la cantidad deseada:</b> <input id="amount_picker" value="1" type="number" placeholder="1" min="1" max="{{ row.cantidad }}" step="1" class="form-control" id="amountInput">
-                                            <div class="cart mt-4 align-items-center"> <a class="btn btn-danger text-uppercase mr-2 px-4" onclick="addToCart({nombre:'{{row.nombre}}',descripcion:'{{row.descripcion}}', producto_ID:'{{row.producto_ID}}',categoria:'{{row.categoria}}',tiene_impuesto:'{{row.tiene_impuesto}}',impuesto_porcentaje:'{{row.impuesto_porcentaje}}',en_descuento:'{{row.en_descuento}}',porcentaje_descuento:'{{row.porcentaje_descuento}}',precio:'{{row.precio}}',proveedor:'{{row.proveedor}}',moneda_nombre:'{{row.moneda_nombre}}',cantidad: document.getElementById('amount_picker').value});">Agregar al carrito</a> <i class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> </div>
+                                            
                                         </div>
                                     </div>
                                 </div>
