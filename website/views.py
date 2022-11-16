@@ -61,7 +61,7 @@ def login():
                         flash('Password incorrecto, intente de nuevo', category='error')
                         return render_template("login.html")
                 except exc.SQLAlchemyError as e:
-                    print(type(e))
+                    print(e)
                     flash('Empleado no encontrado', category='error')
                     return render_template("login.html")
 
@@ -114,6 +114,7 @@ def signup():
             print(password)
             try:
                 with sqlcon.begin() as connection:
+                    connection.execution_options(isolation_level="AUTOCOMMIT")
                     connection.execute(text("DECLARE @punto geography;"+"SET @punto = geography::STPointFromText('POINT("+domicilio+")', 4326);"+"EXEC CRUD_cliente @opcion=1,@cedula=:cedula,@nombre=:nombre,@apellido=:apellido,@correo=:correo,@password=:password,@telefono=:telefono,@domicilio=@punto,@direccion=:direccion,@pais=:pais,@estado_ID=1"),cedula=cedula,nombre=nombre,apellido=apellido,correo=correo,password=password,telefono=telefono,direccion=direccion,pais=pais)
                     flash('Se ha creado una cuenta correctamente!', category='success')
                     products = connection.execute(text("EXEC CRUD_producto @opcion=6,@nombre=null, @descripcion=null, @categoria_ID = null, @tiene_impuesto =null, @minimo =null, @maximo =null,@fecha_produccion=null, @fecha_expiracion=null, @en_descuento=null, @precio=null, @estado_ID=null, @sucursal_ID=null,@cantidad=null,@producto_ID=null,@proveedor_ID=null,@porcentaje_descuento=null")).fetchall()
@@ -218,6 +219,7 @@ def checkout():
 
         with sqlcon.begin() as connection:
             try:
+                connection.execution_options(isolation_level="AUTOCOMMIT")
                 query2 = text("DECLARE @punto geography;"+"SET @punto = geography::STPointFromText('POINT("+ubicacion+")', 4326);"+"EXEC comprar_producto @opcion =1,@producto_ID=:producto_ID,@cliente_ID=:cedula,@facturador_ID =null,@sucursal_ID=:sucursal_ID,@tipo_compra_ID=:tipo_compra_ID,@tipo_entrega_ID=:tipo_entrega_ID,@metodo_pago_ID=:metodo_pago_ID,@fecha=:fecha,@descripcion=:descripcion,@cantidad=:cantidad")
                 for producto in productos:
                     producto_ID = producto['producto_ID']
@@ -287,8 +289,10 @@ def informacion_sucursales():
 @views.route('/mapa_sucursal',methods=['GET','POST'])
 def mapa_sucursal():
     sqlcon = db.create_engine('mssql+pyodbc://@' + 'DESKTOP-UIDL72I\ALESQLSERVER' + '/' + 'CostaRica_BD' + '?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server')
-    longitud = request.args.get('longitud', default = '*', type = str)
-    latitud = request.args.get('latitud', default = '*', type = str)
+    ubicacion = request.args.get('ubicacion', default = '*', type = str)
+    coordenadas_mapa = ubicacion.split()
+    longitud = coordenadas_mapa[0]
+    latitud = coordenadas_mapa[1]
     nombre = request.args.get('nombre', default = '*', type = str)
     print(longitud)
     print(latitud)
@@ -333,7 +337,7 @@ def detalle_producto_proveedor():
     with sqlcon.connect() as connection:
         producto_nombre = request.args.get('producto_nombre', default = '*', type = str)
         products = connection.execute(text("EXEC consultar_proveedor @opcion=1,@producto_nombre=:producto_nombre,@proveedor_nombre=null,@localizacion=null,@pais=null,@ciudad=null"),producto_nombre=producto_nombre).fetchall()
-        products_images = connection.execute(text("select producto_ID,producto,foto_ID,filename,thumbnail from Proveedores_Productos_Fotos where producto=:producto_nombre"),producto_nombre=producto_nombre).fetchall()
+        products_images = connection.execute(text("select producto_ID,producto,foto_ID,filename,thumbnail from Proveedores_Productos_Fotos where producto=:producto_nombre and thumbnail=1"),producto_nombre=producto_nombre).fetchall()
         return render_template("detalle_producto_proveedor.html",products=products,products_images=products_images)
 
 @views.route('/busqueda_nombre_proveedor',methods=['GET','POST'])
@@ -341,8 +345,11 @@ def busqueda_nombre_proveedor():
     sqlcon = db.create_engine('mssql+pyodbc://@' + 'DESKTOP-UIDL72I\ALESQLSERVER' + '/' + 'CostaRica_BD' + '?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server')
     busqueda = request.args.get('busqueda', default = '*', type = str)
     busqueda = busqueda.upper()
+    print(busqueda)
     if (len(busqueda)<3):
         return render_template("busqueda_nombre_proveedor.html",proveedores=None,busqueda=busqueda)
+    elif(bool(re.match('[a-zA-Z\s]+$', busqueda))==False):
+        return render_template("productos_proveedor.html",products=None,busqueda=busqueda)
     else:
         with sqlcon.connect() as connection:
             proveedores = connection.execute(text("EXEC consultar_proveedor @opcion=5,@producto_nombre=null,@proveedor_nombre=null,@localizacion=null,@pais=null,@ciudad=null")).fetchall()
@@ -369,6 +376,8 @@ def busqueda_ciudad_proveedor():
     print(busqueda)
     if (len(busqueda)<3):
         return render_template("busqueda_ciudad_proveedor.html",proveedores=None,busqueda=busqueda)
+    elif(bool(re.match('[a-zA-Z\s]+$', busqueda))==False):
+        return render_template("productos_proveedor.html",products=None,busqueda=busqueda)
     else:
         with sqlcon.connect() as connection:
             proveedores = connection.execute(text("EXEC consultar_proveedor @opcion=7,@producto_nombre=null,@proveedor_nombre=null,@localizacion=null,@pais=null,@ciudad=:busqueda"),busqueda=busqueda).fetchall()
@@ -379,11 +388,15 @@ def productos_proveedor():
     sqlcon = db.create_engine('mssql+pyodbc://@' + 'DESKTOP-UIDL72I\ALESQLSERVER' + '/' + 'CostaRica_BD' + '?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server')
     busqueda = request.args.get('busqueda', default = '*', type = str)
     busqueda=busqueda.upper()
+    print(busqueda)
     if (len(busqueda)<3):
+        return render_template("productos_proveedor.html",products=None,busqueda=busqueda)
+    elif(bool(re.match('[a-zA-Z\s]+$', busqueda))==False):
         return render_template("productos_proveedor.html",products=None,busqueda=busqueda)
     else:
         with sqlcon.connect() as connection:
             products = connection.execute(text("EXEC consultar_proveedor @opcion=6,@producto_nombre=null,@proveedor_nombre=null,@localizacion=null,@pais=null,@ciudad=null")).fetchall()
+            print(products)
             return render_template("productos_proveedor.html",products=products,busqueda=busqueda)
 
 @views.route('/todos_productos',methods=['GET','POST'])
@@ -1141,15 +1154,13 @@ def ingresar_empleado():
 
             try:
                 with sqlcon.begin() as connection:
+                    connection.execution_options(isolation_level="AUTOCOMMIT")
                     sucursal_ID_list = connection.execute(text("SELECT sucursal_ID from Sucursales where nombre=:sucursal"),sucursal=sucursal).fetchall()
                     sucursal_ID = sucursal_ID_list[0][0]
                     connection.execute(text("DECLARE @fecha_actual datetime = getdate(); EXEC CRUD_Empleado @opcion=1,@tipo_consulta=null,@cedula=:cedula,@nombre=:nombre,@apellido=:apellido,@correo=:correo,@password=:password,@telefono=:telefono,@fecha_contratacion=@fecha_actual,@sucursal_ID=:sucursal_ID,@pais=:pais,@puesto=:puesto,@foto_filename=:foto_filename,@administrador=:administrador,@salario_base=:salario_base,@estado_ID=1,@fecha2=null"),cedula=cedula,nombre=nombre,apellido=apellido,correo=correo,password=password,telefono=telefono,sucursal_ID=sucursal_ID,pais=pais,puesto=puesto,foto_filename=foto_filename,administrador=administrador,salario_base=salario_base)
-                    flash('Se ha creado una cuenta correctamente!', category='success')
+                    flash('Se ha ingresado un empleado correctamente!', category='success')
                     products = connection.execute(text("EXEC CRUD_producto @opcion=6,@nombre=null, @descripcion=null, @categoria_ID = null, @tiene_impuesto =null, @minimo =null, @maximo =null,@fecha_produccion=null, @fecha_expiracion=null, @en_descuento=null, @precio=null, @estado_ID=null, @sucursal_ID=null,@cantidad=null,@producto_ID=null,@proveedor_ID=null,@porcentaje_descuento=null")).fetchall()
                     return render_template("home.html",products=products,comprado=False)
-                    sucursales = connection.execute(text("SELECT nombre from Sucursales")).fetchall()
-                    puestos = connection.execute(text("SELECT nombre from Puestos")).fetchall()
-                    return render_template("ingresar_empleado.html",sucursales=sucursales,puestos=puestos)
             except exc.SQLAlchemyError as e:
                 print(e.__cause__)
                 flash("El empleado ya está registrado en la base de datos.", category='error')
@@ -1177,6 +1188,7 @@ def cambiar_foto_anual():
                 print(foto_ID)
                 filename_cambiar = request.form.get('link_imagen')
                 print(filename_cambiar)
+                connection.execution_options(isolation_level="AUTOCOMMIT")
                 if (foto_ID < 2999):
                     connection.execute(text("update Foto set filename=:filename_cambiar where foto_ID=:foto_ID"),filename_cambiar=filename_cambiar,foto_ID=foto_ID)
                 elif (foto_ID >= 3000):
@@ -1231,6 +1243,7 @@ def revisar_expirados_quitar_exhibidor():
     sucursal_ID = request.args.get('sucursal_ID', default = '*', type = int)
     sucursal = request.args.get('sucursal', default = '*', type = str)
     with sqlcon.begin() as connection:
+        connection.execution_options(isolation_level="AUTOCOMMIT")
         connection.execute(text("EXEC revisar_expirados @opcion =3,@producto_ID =null,@sucursal_ID =:sucursal_ID,@descuento_porcentaje = null"),sucursal_ID=sucursal_ID)
         productos = connection.execute(text("EXEC revisar_expirados @opcion =4,@producto_ID =null,@sucursal_ID =:sucursal_ID,@descuento_porcentaje = null"),sucursal_ID=sucursal_ID).fetchall()
         sucursales = connection.execute(text("SELECT nombre from Sucursales")).fetchall()
@@ -1248,6 +1261,7 @@ def revisar_casi_expirados_descuento():
     print(sucursal)
     print(descuento)
     with sqlcon.begin() as connection:
+        connection.execution_options(isolation_level="AUTOCOMMIT")
         connection.execute(text("EXEC revisar_expirados @opcion =2,@producto_ID =null,@sucursal_ID =:sucursal_ID,@descuento_porcentaje = :descuento"),sucursal_ID=sucursal_ID,descuento=descuento)
         productos = connection.execute(text("EXEC revisar_expirados @opcion =1,@producto_ID =null,@sucursal_ID =:sucursal_ID,@descuento_porcentaje = null"),sucursal_ID=sucursal_ID).fetchall()
         sucursales = connection.execute(text("SELECT nombre from Sucursales")).fetchall()
@@ -1279,13 +1293,14 @@ def reordenar_producto_pedido():
         print(proveedor)
         with sqlcon.begin() as connection:
             try:
+                connection.execution_options(isolation_level="AUTOCOMMIT")
                 connection.execute(text("EXEC reordenar_producto @opcion =1,@producto_ID =:producto_ID,@sucursal_ID =:sucursal_ID,@descripcion ='Reorden de productos',@cantidad=:cantidad"),producto_ID=producto_ID,sucursal_ID=sucursal_ID,cantidad=cantidad).fetchall()
                 flash('Se reordenó el producto correctamente del proveedor: '+proveedor,category='success')
                 productos = connection.execute(text("select producto_ID,sucursal_ID,sucursal,pais,moneda_nombre,nombre,descripcion,categoria,impuesto_porcentaje,minimo,maximo,(Productos_Fotos.maximo-Productos_Fotos.cantidad) as faltan_para_maximo,precio,proveedor,proveedor_ID,proveedor_porcentaje,cantidad,porcentaje_descuento from Productos_Fotos where Productos_Fotos.cantidad < Productos_Fotos.minimo and thumbnail=1")).fetchall()
                 return render_template("reordenar_producto.html",productos=productos)
             except exc.SQLAlchemyError as e:
                 print(e)
-                flash('Se reordenó el producto correctamente del proveedor: '+proveedor,category='success')
+                flash('No se pudo reordenar el producto del proveedor: '+proveedor,category='error')
                 productos = connection.execute(text("select producto_ID,sucursal_ID,sucursal,pais,moneda_nombre,nombre,descripcion,categoria,impuesto_porcentaje,minimo,maximo,(Productos_Fotos.maximo-Productos_Fotos.cantidad) as faltan_para_maximo,precio,proveedor,proveedor_ID,proveedor_porcentaje,cantidad,porcentaje_descuento from Productos_Fotos where Productos_Fotos.cantidad < Productos_Fotos.minimo and thumbnail=1")).fetchall()
                 return render_template("reordenar_producto.html",productos=productos)
 
@@ -1312,6 +1327,7 @@ def pagar_salario_empleado():
     print(fecha)
     with sqlcon.begin() as connection:
         try:
+            connection.execution_options(isolation_level="AUTOCOMMIT")
             connection.execute(text("EXEC pagar_salario @opcion = 1,@pago_ID =null,@empleado_cedula=:cedula, @fecha_pago=:fecha , @descripcion ='Pago de salario mensual'"),cedula=cedula,fecha=fecha)
             flash('Salario para el empleado '+str(cedula)+' pagado correctamente.', category='success')
             return render_template("pagar_salario.html")
@@ -1396,3 +1412,110 @@ def pagar_salario_bono_facturador_fechas_otorgar():
             print(e.__cause__)
             flash('Este empleado no ha facturado 1000 productos en la semana dada.', category='error')
             return render_template("pagar_salario.html")
+
+@views.route('/ingresar_proveedor', methods=['GET','POST'])
+def ingresar_proveedor():
+    sqlcon = db.create_engine('mssql+pyodbc://@' + 'DESKTOP-UIDL72I\ALESQLSERVER' + '/' + 'CostaRica_BD' + '?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server')
+
+    if request.method == 'POST':
+        correo = request.form.get('email')
+        nombre = request.form.get('firstName')
+        telefono = int(request.form.get('telefono'))
+        ciudad = request.form.get('ciudad')
+        porcentaje = float(request.form.get('porcentaje'))
+        pais = request.form.get('pais')
+        longitud = request.form.get('longitud')
+        latitud = request.form.get('latitud')
+        print(request.form)
+
+        ubicacion = longitud + " " + latitud
+        print(ubicacion)
+
+        if nombre == None or nombre == "" or nombre == " ":
+            flash("El nombre no puede estar vacío.",category='error')
+        elif(bool(re.match('[a-zA-Z\s]+$', nombre))==False):
+            flash("Solo puede usar caracteres de A-Z.",category='error')
+        elif ciudad == None or ciudad == "" or ciudad == " ":
+            flash("La ciudad no puede estar vacía.",category='error')
+        elif(bool(re.match('[a-zA-Z\s]+$', ciudad))==False):
+            flash("Solo puede usar caracteres de A-Z.",category='error')
+        elif latitud == None or latitud == "" or latitud == " ":
+            flash("La latitud no puede estar vacía.",category='error')
+        elif longitud == None or longitud == "" or longitud == " ":
+            flash("La longitud no puede estar vacía.",category='error')
+        else:
+            try:
+                with sqlcon.begin() as connection:
+                    connection.execution_options(isolation_level="AUTOCOMMIT")
+                    connection.execute(text("DECLARE @punto geography;"+"SET @punto = geography::STPointFromText('POINT("+ubicacion+")', 4326);"+"EXEC CRUD_proveedor @opcion=1,@nombre=:nombre,@porcentaje=:porcentaje,@correo=:correo,@ciudad=:ciudad,@telefono=:telefono,@ubicacion=@punto,@pais=:pais,@estado_ID=2000"),nombre=nombre,porcentaje=porcentaje,correo=correo,ciudad=ciudad,telefono=telefono,pais=pais)
+                    flash('Se ha ingresado un proveedor correctamente!', category='success')
+                    products = connection.execute(text("EXEC CRUD_producto @opcion=6,@nombre=null, @descripcion=null, @categoria_ID = null, @tiene_impuesto =null, @minimo =null, @maximo =null,@fecha_produccion=null, @fecha_expiracion=null, @en_descuento=null, @precio=null, @estado_ID=null, @sucursal_ID=null,@cantidad=null,@producto_ID=null,@proveedor_ID=null,@porcentaje_descuento=null")).fetchall()
+                    return render_template("home.html",products=products,comprado=False)
+            except exc.SQLAlchemyError as e:
+                print(e.__cause__)
+                flash(e.__cause__, category='error')
+                return render_template("ingresar_proveedor.html")
+
+
+            
+
+    return render_template("ingresar_proveedor.html")
+
+@views.route('/ingresar_sucursal', methods=['GET','POST'])
+def ingresar_sucursal():
+    sqlcon = db.create_engine('mssql+pyodbc://@' + 'DESKTOP-UIDL72I\ALESQLSERVER' + '/' + 'CostaRica_BD' + '?trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server')
+
+    if request.method == 'POST':
+        nombre = request.form.get('name')
+        cedula = int(request.form.get('cedula-admin'))
+        ciudad = request.form.get('distrito')
+        horario_inicio = request.form.get('horario_inicio')
+        horario_fin = request.form.get('horario_fin')
+        pais = request.form.get('pais')
+        longitud = request.form.get('longitud')
+        latitud = request.form.get('latitud')
+        telefono = int(request.form.get('telefono'))
+        print(request.form)
+
+        estado_ID = 0
+        if pais=='Costa Rica':
+            estado_ID = 1
+        elif pais=='Guatemala':
+            estado_ID = 3000
+        elif pais=='Panama':
+            estado_ID = 4000
+        
+        print(estado_ID)
+
+        ubicacion = longitud + " " + latitud
+        print(ubicacion)
+
+        if nombre == None or nombre == "" or nombre == " ":
+            flash("El nombre no puede estar vacío.",category='error')
+        elif(bool(re.match('[a-zA-Z\s]+$', nombre))==False):
+            flash("Solo puede usar caracteres de A-Z.",category='error')
+        elif ciudad == None or ciudad == "" or ciudad == " ":
+            flash("La ciudad no puede estar vacía.",category='error')
+        elif(bool(re.match('[a-zA-Z\s]+$', ciudad))==False):
+            flash("Solo puede usar caracteres de A-Z.",category='error')
+        elif latitud == None or latitud == "" or latitud == " ":
+            flash("La latitud no puede estar vacía.",category='error')
+        elif longitud == None or longitud == "" or longitud == " ":
+            flash("La longitud no puede estar vacía.",category='error')
+        else:
+            try:
+                with sqlcon.begin() as connection:
+                    connection.execution_options(isolation_level="AUTOCOMMIT")
+                    connection.execute(text("DECLARE @punto geography;"+"SET @punto = geography::STPointFromText('POINT("+ubicacion+")', 4326);"+"EXEC CRUD_sucursal @opcion=1,@nombre=:nombre,@cedula_administrador=:cedula,@horario_inicio=:horario_inicio,@horario_fin=:horario_fin,@ciudad=:ciudad,@telefono=:telefono,@ubicacion=@punto,@pais=:pais,@estado_ID=:estado_ID"),nombre=nombre,cedula=cedula,horario_inicio=horario_inicio,horario_fin=horario_fin,ciudad=ciudad,telefono=telefono,pais=pais,estado_ID=estado_ID)
+                    flash('Se ha ingresado una sucursal correctamente!', category='success')
+                    products = connection.execute(text("EXEC CRUD_producto @opcion=6,@nombre=null, @descripcion=null, @categoria_ID = null, @tiene_impuesto =null, @minimo =null, @maximo =null,@fecha_produccion=null, @fecha_expiracion=null, @en_descuento=null, @precio=null, @estado_ID=null, @sucursal_ID=null,@cantidad=null,@producto_ID=null,@proveedor_ID=null,@porcentaje_descuento=null")).fetchall()
+                    return render_template("home.html",products=products,comprado=False)
+            except exc.SQLAlchemyError as e:
+                print(e.__cause__)
+                flash(e.__cause__, category='error')
+                return render_template("ingresar_sucursal.html")
+
+
+            
+
+    return render_template("ingresar_sucursal.html")

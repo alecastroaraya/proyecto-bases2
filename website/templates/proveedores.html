@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                        <div class="text-center"><a id="myBtn-{{row.producto_ID}}" class="btn btn-outline-dark mt-auto" onclick='javascript: window.open("/productos_proveedor?busqueda="+ nombre_proveedor.textContent, "_self");'>Ver sus productos</a></div>
+                        <div class="text-center"><a id="myBtn-{{row.producto_ID}}" class="btn btn-outline-dark mt-auto" onclick='javascript: window.open("/productos_proveedor?busqueda={{row.nombre}}", "_self");'>Ver sus productos</a></div>
                     </div>
                 </div>
             </div>

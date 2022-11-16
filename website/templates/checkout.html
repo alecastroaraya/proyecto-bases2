@@ -40,12 +40,12 @@
                       <br />
                       <small class="text-muted">Porcentaje proveedor: `+producto.porcentaje_proveedor+`%`+`</small>
                       `
-                      if (producto.en_descuento==1){
+                      precio_actual=producto.precio;
+                      if (producto.en_descuento=='True'){
                         string=string+`<br /><small class="text-muted">Descuento: `+producto.porcentaje_descuento+`%</small>`
-                        precio_actual=producto.precio;
                         precio_actual=precio_actual-(((parseFloat(producto.porcentaje_descuento))/100)*producto.precio)
                       }
-                      if (producto.tiene_impuesto==1){
+                      if (producto.tiene_impuesto=='True'){
                         string=string+`<br /><small class="text-muted">Impuesto: `+producto.impuesto_porcentaje+`%</small>`
                         precio_actual=precio_actual+(((parseFloat(producto.impuesto_porcentaje))/100)*producto.precio)
                         

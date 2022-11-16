@@ -1,0 +1,130 @@
+{% extends "base.html" %} 
+{% block title %}Ingresar sucursal{% endblock %}
+{% block content %}
+<form method="POST">
+    <br />
+    <body class="text-left">
+        <div class="container">
+            <main class="form-signup">
+                <form>
+
+                    <h3 class="text-center">Ingresar sucursal</h3>
+
+                    <div class="form-group">
+                        <label for="name">Nombre</label>
+                        <input required
+                            type="text" 
+                            class="form-control" 
+                            id="name" 
+                            name="name" 
+                            placeholder="Ingrese el nombre"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="cedula-admin">Cédula administrador</label>
+                        <input required
+                            type="number" 
+                            class="form-control" 
+                            id="cedula-admin" 
+                            name="cedula-admin" 
+                            placeholder="Ingrese la cedula del admin"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="distrito">Distrito</label>
+                        <input required
+                            type="text" 
+                            class="form-control" 
+                            id="distrito" 
+                            name="distrito" 
+                            placeholder="Ingrese su distrito"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="latitud">Latitud</label>
+                        <input required
+                            type="number" 
+                            step="0.01"
+                            class="form-control" 
+                            id="latitud" 
+                            name="latitud" 
+                            placeholder="Ingrese la latitud de la ubicacion"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="longitud">Longitud</label>
+                        <input required
+                            type="number" 
+                            step="0.01"
+                            class="form-control" 
+                            id="longitud" 
+                            name="longitud" 
+                            placeholder="Ingrese la longitud de la ubicacion"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="horario_inicio">Horario inicio</label>
+                        <input required
+                            type="time" 
+                            class="form-control" 
+                            id="horario_inicio" 
+                            name="horario_inicio" 
+                            placeholder="Ingrese el horario de inicio"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="horario_fin">Horario fin</label>
+                        <input required
+                            type="time" 
+                            class="form-control" 
+                            id="horario_fin" 
+                            name="horario_fin" 
+                            placeholder="Ingrese el horario de fin"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Telefono</label>
+                        <input required
+                            type="number" 
+                            class="form-control" 
+                            id="telefono" 
+                            name="telefono" 
+                            placeholder="Ingrese el telefono"
+                        />
+                    </div>
+                    <br />
+                    <div class="form-group">
+                        <label for="paises">Seleccione su país</label>
+                        <select name="pais" id="pais" required>
+                            <option value="Costa Rica">Costa Rica</option>
+                            <option value="Guatemala">Guatemala</option>
+                            <option value="Panama">Panamá</option>
+                        </select>
+                    </div>
+                    
+                    
+                    <br />
+                    <div class="col text-center">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                    <div id="result">
+                        <!--Position information will be inserted here-->
+                    </div>
+                </form>
+            </main>
+        </div>
+        <script>
+            function showPosition() {
+                if(navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var positionInfo = "Your current position is (" + position.coords.longitude + " " + position.coords.latitude + ")";
+                        document.getElementById("result").innerHTML = positionInfo;
+                    });
+                } else {
+                    alert("Sorry, your browser does not support HTML5 geolocation.");
+                }
+            }
+        </script>
+    </body>
+</form>
+{% endblock %}
